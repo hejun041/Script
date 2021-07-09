@@ -85,7 +85,7 @@ function AutoGain() {
     return new Promise((resolve, reject) => {
         $.post(batHost('article/red_packet_188.json?', articlebody), async (error, resp, data) => {
             let giftres = JSON.parse(data);
-            $.log(JSON.stringify(bodyobj) + "\n" + error + "\n" + resp)
+            $.log(data + "\n" + error + "\n" + resp)
             if (giftres.error_code == '0' && giftres.items.score > 0) {
                 console.log(`${giftres.items.alert}\n`);
                 artsnum += 1
