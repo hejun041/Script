@@ -2,10 +2,11 @@
 更新时间: 2021-07-9 22:10
 
 多个请求体时用'&'号或者换行隔开" ‼️
+cron 37 0-20/1 * * * 直接重放20次也可以
 rewrite https:\/\/kandian\.wkandian\.com\/v5\/article\/red_packet_188\.json https://raw.githubusercontent.com/hejun041/Script/master/Task/youth_gift.js
 */
 
-const $ = new Env("中青看点领红包")
+const $ = new Env("中青看文章红包")
 //const notify = $.isNode() ? require('./sendNotify') : '';
 let ReadArr = [];
 let YouthBody = $.getdata('youth_gift');
@@ -51,6 +52,11 @@ $.log("******** 您共获取" + ReadArr.length + "次红包请求，任务开始
     }
     if (!$.isNode()) {
         $.begin = indexLast ? parseInt(indexLast) : 1;
+        if ($.begin + 1 == 20) {//一个账号只有20次红包
+            $.log("\n今天红包🧧已领完");
+            $.msg("\n今天红包🧧已领完");
+            $.done()
+        }
         if ($.begin + 1 < ReadArr.length) {
             $.log("\n上次运行到第" + $.begin + "次终止，本次从" + (parseInt($.begin) + 1) + "次开始");
         } else {
@@ -65,7 +71,7 @@ $.log("******** 您共获取" + ReadArr.length + "次红包请求，任务开始
     if (youth_gift_cut == "true") {
         $.log("     请注意缩减请求开关已打开‼️\n     如不需要    请强制停止\n     关闭Boxjs缩减请求开关")
     };
-    $.index = 0, readtimes = "";
+    $.index = 0;
     for (var i = indexLast ? indexLast : 0; i < ReadArr.length; i++) {
         if (ReadArr[i]) {
             articlebody = ReadArr[i];
@@ -87,7 +93,6 @@ function AutoGain() {
             $.log(data + "\n" + error + "\n" + resp)
             if (giftres.error_code == '0' && giftres.items.score > 0) {
                 console.log(`${giftres.items.alert}\n`);
-                artsnum += 1
                 giftscore += parseInt(giftres.items.score);
                 if ($.index == ReadArr.length) {
                     $.log($.index + "次任务已全部完成，即将结束")
