@@ -1,24 +1,25 @@
 /*
 更新时间: 2021-07-9 22:10
+
 多个请求体时用'&'号或者换行隔开" ‼️
+rewrite https:\/\/kandian\.wkandian\.com\/v5\/article\/red_packet_188\.json https://raw.githubusercontent.com/hejun041/Script/master/Task/youth_gift.js
 */
 
-const $ = new Env("中青看点领文章奖励")
+const $ = new Env("中青看点领红包")
 //const notify = $.isNode() ? require('./sendNotify') : '';
 let ReadArr = [];
 let YouthBody = $.getdata('youth_gift');
 let youth_gift_cut = $.getdata('youth_gift_cut');
 let indexLast = $.getdata('zqbody_gift_index');
-let artsnum = 0;
 let giftscore = 0;
-let artArr = [], delbody = 0;
+let delbody = 0;
 if (isGetbody = typeof $request !== `undefined`) {
     Getbody();
     $.done()
 }
 if (!$.isNode() && !YouthBody == true) {
-    $.log("您未获取gift请求，请求gift后获取")
-    $.msg($.name, "您未获取gift请求，请求gift后获取")
+    $.log("您未获取红包请求，点击文章底部红包后获取")
+    $.msg($.name, "您未获取红包请求，点击文章底部红包后获取")
     $.done()
 } else if (!$.isNode() && YouthBody.indexOf("&") == -1) {
     ReadArr.push(YouthBody)
@@ -41,7 +42,7 @@ bjTime = new Date(timestamp).toLocaleString('zh', {
     timeZoneName: 'long'
 });
 console.log(`\n === 脚本执行 ${bjTime} ===\n`);
-$.log("******** 您共获取" + ReadArr.length + "次gift请求，任务开始 *******")
+$.log("******** 您共获取" + ReadArr.length + "次红包请求，任务开始 *******")
 
 !(async () => {
     if (!ReadArr[0]) {
@@ -69,14 +70,12 @@ $.log("******** 您共获取" + ReadArr.length + "次gift请求，任务开始 *
         if (ReadArr[i]) {
             articlebody = ReadArr[i];
             $.index = $.index + 1;
-            $.log(`-------------------------\n开始中青看点第${$.index}次gift\n`);
+            $.log(`-------------------------\n开始中青看点第${$.index}次红包\n`);
             await AutoGain();
         }
     };
     $.log("\n……………………………………………………………………\n\n本次共删除" + delbody + "个请求，剩余" + (ReadArr.length - delbody) + "个请求");
-    $.log("本次共gift" + artsnum + "次资讯，共获得" + giftscore + "青豆(不含0青豆次数)\n");
-    console.log(`-------------------------\n\n中青看点共完成${$.index}次gift，共计获得${giftscore}个青豆，gift请求全部结束`);
-    $.msg($.name, `本次运行共完成${$.index}次gift，共计获得${giftscore}个青豆`, "删除" + delbody + "个请求")
+    $.msg($.name, `本次运行共完成${$.index}次红包，共计获得${giftscore}个青豆`, "删除" + delbody + "个请求")
 })()
     .catch((e) => $.logErr(e))
     .finally(() => $.done())
@@ -96,14 +95,14 @@ function AutoGain() {
                     await $.wait(20000);
                 }
             } else if (giftres.error_code == '0' && data.indexOf('"score":0') > -1 && giftres.items.score == 0) {
-                $.log(`\n本次gift获得0个青豆，等待10s即将开始下次gift\n`);
+                $.log(`\n本次红包获得0个青豆，等待10s即将开始下次红包\n`);
                 if (youth_gift_cut == "true") {
                     await removebody();
                     $.log("已删除第" + ($.begin) + "个请求，如无需删除请及时提前关掉boxjs内的开关，使用后即关闭")
                     delbody += 1
                 }
             } else if (giftres.success == false) {
-                console.log(`第${$.index}次gift请求有误，请删除此请求`);
+                console.log(`第${$.index}次红包请求有误，请删除此请求`);
                 if (youth_gift_cut == "true") {
                     await removebody();
                     $.log("已删除第" + ($.begin) + "个请求，如无需删除请及时提前关掉boxjs内的开关，使用后即关闭");
@@ -152,18 +151,18 @@ function Getbody() {
         bodyVal = $request.body
         if (YouthBody) {
             if (YouthBody.indexOf(bodyVal) > -1) {
-                $.log("此gift请求已存在，本次跳过")
+                $.log("此红包请求已存在，本次跳过")
             } else if (YouthBody.indexOf(bodyVal) == -1) {
                 YouthBodys = YouthBody + "&" + bodyVal;
                 $.setdata(YouthBodys, 'youth_gift');
-                $.log(`${$.name}获取gift: 成功, YouthBodys: ${bodyVal}`);
+                $.log(`${$.name}获取红包: 成功, YouthBodys: ${bodyVal}`);
                 bodys = YouthBodys.split("&")
-                $.msg($.name, "获取第" + bodys.length + "个gift请求: 成功🎉", ``)
+                $.msg($.name, "获取第" + bodys.length + "个红包请求: 成功🎉", ``)
             }
         } else {
             $.setdata(bodyVal, 'youth_gift');
-            $.log(`${$.name}获取gift: 成功, YouthBodys: ${bodyVal}`);
-            $.msg($.name, `获取第一个gift请求: 成功🎉`, ``)
+            $.log(`${$.name}获取红包: 成功, YouthBodys: ${bodyVal}`);
+            $.msg($.name, `获取第一个红包请求: 成功🎉`, ``)
         }
     }
 }
