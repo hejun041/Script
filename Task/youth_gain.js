@@ -117,7 +117,7 @@ function GainStart() {
                 $.setdata(smbody, 'youth_start');
                 $.log(startres.message + "已自动删除")
             } else {
-                comstate = startres.items && startres.items.comtele_state ? startres.items.comtele_state : 1;
+                comstate = startres.items.comtele_state;
                 if (comstate == 0) {
                     $.log("任务开始，" + startres.items.banner_id + startres.message);
                     await $.wait(10000);
@@ -140,7 +140,7 @@ function lookStart() {
                 $.setdata(smbody, 'youth_look');
                 $.log(startlk.message + "已自动删除")
             } else {
-                comstate = startlk.items && startlk.items.comtele_state ? startlk.items.comtele_state : 1;
+                comstate = startlk.items.comtele_state;
                 if (comstate == 0) {
                     $.log("任务开始，" + startlk.items.banner_id + startlk.message);
                     for (let j = 0; j < startlk.items.see_num - startlk.items.read_num; j++) {
