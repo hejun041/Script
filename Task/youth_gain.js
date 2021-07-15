@@ -111,22 +111,30 @@ console.log(`\n === 脚本执行 ${bjTime} ===\n`);
 function GainStart() {
     return new Promise((resolve, reject) => {
         $.post(gainHost('task/browse_start.json', gainbody), async (error, resp, data) => {
-            let startres = JSON.parse(data);
-            if (startres.success == false) {
-                smbody = $.getdata('youth_start').replace(gainbody + "&", "");
-                $.setdata(smbody, 'youth_start');
-                $.log(startres.message + "已自动删除")
-            } else {
-                comstate = startres.items.comtele_state;
-                if (comstate == 0) {
-                    $.log("任务开始，" + startres.items.banner_id + startres.message);
-                    await $.wait(10000);
-                    await GainEnd()
-                } else if (comstate == 1) {
-                    $.log("任务:" + startres.items.banner_id + "已完成，本次跳过");
-                }
+            if (error) {
+                reject()
             }
-            resolve()
+            try {
+                let startres = JSON.parse(data);
+                if (startres.success == false) {
+                    smbody = $.getdata('youth_start').replace(gainbody + "&", "");
+                    $.setdata(smbody, 'youth_start');
+                    $.log(startres.message + "已自动删除")
+                } else {
+                    comstate = startres.items.comtele_state;
+                    if (comstate == 0) {
+                        $.log("任务开始，" + startres.items.banner_id + startres.message);
+                        await $.wait(10000);
+                        await GainEnd()
+                    } else if (comstate == 1) {
+                        $.log("任务:" + startres.items.banner_id + "已完成，本次跳过");
+                    }
+                }
+            } catch (e) {
+                $.log('GainStart:' + e)
+            } finally {
+                resolve()
+            }
         })
     })
 }
@@ -134,27 +142,35 @@ function GainStart() {
 function lookStart() {
     return new Promise((resolve, reject) => {
         $.post(gainHost('nameless/adlickstart.json', lookbody), async (error, resp, data) => {
-            startlk = JSON.parse(data);
-            if (startlk.success == false) {
-                smbody = $.getdata('youth_look').replace(lookbody + "&", "");
-                $.setdata(smbody, 'youth_look');
-                $.log(startlk.message + "已自动删除")
-            } else {
-                comstate = startlk.items.comtele_state;
-                if (comstate == 0) {
-                    $.log("任务开始，" + startlk.items.banner_id + startlk.message);
-                    for (let j = 0; j < startlk.items.see_num - startlk.items.read_num; j++) {
-                        $.log("任务执行第" + parseInt(j + 1) + "次")
-                        await $.wait(8000);
-                        await lookstatus()
-                    }
-                    await $.wait(10000);
-                    await lookEnd()
-                } else if (comstate == 1) {
-                    $.log("任务:" + startlk.items.banner_id + "已完成，本次跳过");
-                }
+            if (error) {
+                reject()
             }
-            resolve()
+            try {
+                startlk = JSON.parse(data);
+                if (startlk.success == false) {
+                    smbody = $.getdata('youth_look').replace(lookbody + "&", "");
+                    $.setdata(smbody, 'youth_look');
+                    $.log(startlk.message + "已自动删除")
+                } else {
+                    comstate = startlk.items.comtele_state;
+                    if (comstate == 0) {
+                        $.log("任务开始，" + startlk.items.banner_id + startlk.message);
+                        for (let j = 0; j < startlk.items.see_num - startlk.items.read_num; j++) {
+                            $.log("任务执行第" + parseInt(j + 1) + "次")
+                            await $.wait(8000);
+                            await lookstatus()
+                        }
+                        await $.wait(10000);
+                        await lookEnd()
+                    } else if (comstate == 1) {
+                        $.log("任务:" + startlk.items.banner_id + "已完成，本次跳过");
+                    }
+                }
+            } catch (e) {
+                $.log('lookStart:' + e)
+            } finally {
+                resolve()
+            }
         })
     })
 }
@@ -162,14 +178,22 @@ function lookStart() {
 function GainEnd() {
     return new Promise((resolve, reject) => {
         $.post(gainHost('task/browse_end.json', gainbody), (error, resp, data) => {
-            let endres = JSON.parse(data);
-            if (endres.success == true) {
-                $.log("任务" + endres.items.banner_id + endres.message + "，恭喜获得" + endres.items.score + "个青豆");
-                gainscore += parseInt(endres.items.score)
-            } else {
-                $.log(endres.message)
+            if (error) {
+                reject()
             }
-            resolve()
+            try {
+                let endres = JSON.parse(data);
+                if (endres.success == true) {
+                    $.log("任务" + endres.items.banner_id + endres.message + "，恭喜获得" + endres.items.score + "个青豆");
+                    gainscore += parseInt(endres.items.score)
+                } else {
+                    $.log(endres.message)
+                }
+            } catch (e) {
+                $.log('GainEnd:' + e)
+            } finally {
+                resolve()
+            }
         })
     })
 }
@@ -177,13 +201,21 @@ function GainEnd() {
 function lookstatus() {
     return new Promise((resolve, reject) => {
         $.post(gainHost('nameless/bannerstatus.json', lookbody), (error, resp, data) => {
-            let endres = JSON.parse(data);
-            if (endres.success == true) {
-                $.log("任务" + endres.items.banner_id + endres.message);
-            } else {
-                $.log(endres.message)
+            if (error) {
+                reject()
             }
-            resolve()
+            try {
+                let endres = JSON.parse(data);
+                if (endres.success == true) {
+                    $.log("任务" + endres.items.banner_id + endres.message);
+                } else {
+                    $.log(endres.message)
+                }
+            } catch (e) {
+                $.log('lookstatus:' + e)
+            } finally {
+                resolve()
+            }
         })
     })
 }
@@ -191,14 +223,22 @@ function lookstatus() {
 function lookEnd() {
     return new Promise((resolve, reject) => {
         $.post(gainHost('nameless/adlickend.json', lookbody), (error, resp, data) => {
-            let endres = JSON.parse(data);
-            if (endres.success == true) {
-                $.log("任务" + endres.items.banner_id + endres.message + "，" + endres.items.desc)
-                lookscore += parseInt(endres.items.score)
-            } else {
-                $.log(endres.message)
+            if (error) {
+                reject()
             }
-            resolve()
+            try {
+                let endres = JSON.parse(data);
+                if (endres.success == true) {
+                    $.log("任务" + endres.items.banner_id + endres.message + "，" + endres.items.desc)
+                    lookscore += parseInt(endres.items.score)
+                } else {
+                    $.log(endres.message)
+                }
+            } catch (e) {
+                $.log('lookEnd:' + e)
+            } finally {
+                resolve()
+            }
         })
     })
 }

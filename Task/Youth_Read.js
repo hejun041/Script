@@ -99,6 +99,9 @@ $.log("******** 您共获取" + ReadArr.length + "次阅读请求，任务开始
 function bodyInfo() {
     return new Promise((resolve, reject) => {
         $.get(batHost('article/info/get.json?' + articlebody), async (error, resp, data) => {
+            if (error) {
+                reject()
+            }
             let bodyobj = JSON.parse(data);
             //$.log(JSON.stringify(bodyobj,null,2))
             $.begin = $.begin + 1;
@@ -127,7 +130,7 @@ function bodyInfo() {
                     }
                 }
             } catch (e) {
-                $.log('获取文章请求失败' + e)
+                $.log('bodyInfo:' + e)
             } finally {
                 resolve()
             }
@@ -139,49 +142,57 @@ function bodyInfo() {
 function AutoRead() {
     return new Promise((resolve, reject) => {
         $.post(batHost('article/complete.json', articlebody), async (error, response, data) => {
+            if (error) {
+                reject()
+            }
             let readres = JSON.parse(data);
             //$.log(JSON.stringify(readres,null,2))
 
-            if (readres.error_code == '0' && data.indexOf("read_score") > -1 && readres.items.read_score > 0) {
-                console.log(`本次阅读获得${readres.items.read_score}个青豆，请等待30s后执行下一次阅读\n`);
-                if (data.indexOf("ctype") > -1) {
-                    if (readres.items.ctype == 0) {
-                        artsnum += 1
-                        readscore += parseInt(readres.items.read_score);
-                    } else if (readres.items.ctype == 3) {
-                        videosnum += 1
-                        videoscore += parseInt(readres.items.read_score);
+            try {
+                if (readres.error_code == '0' && data.indexOf("read_score") > -1 && readres.items.read_score > 0) {
+                    console.log(`本次阅读获得${readres.items.read_score}个青豆，请等待30s后执行下一次阅读\n`);
+                    if (data.indexOf("ctype") > -1) {
+                        if (readres.items.ctype == 0) {
+                            artsnum += 1
+                            readscore += parseInt(readres.items.read_score);
+                        } else if (readres.items.ctype == 3) {
+                            videosnum += 1
+                            videoscore += parseInt(readres.items.read_score);
+                        }
                     }
-                }
-                if ($.index % 2 == 0) {
-                    if ($.isNode() && process.env.YOUTH_ATIME) {
-                        timebodyVal = process.env.YOUTH_ATIME;
+                    if ($.index % 2 == 0) {
+                        if ($.isNode() && process.env.YOUTH_ATIME) {
+                            timebodyVal = process.env.YOUTH_ATIME;
+                        } else {
+                            timebodyVal = $.getdata('autotime_zq');
+                        }
+                        await readTime()
+                    };
+                    if ($.index == ReadArr.length) {
+                        $.log($.index + "次任务已全部完成，即将结束")
                     } else {
-                        timebodyVal = $.getdata('autotime_zq');
+                        await $.wait(20000);
                     }
-                    await readTime()
-                };
-                if ($.index == ReadArr.length) {
-                    $.log($.index + "次任务已全部完成，即将结束")
-                } else {
-                    await $.wait(20000);
+                } else if (readres.error_code == '0' && data.indexOf('"score":0') > -1 && readres.items.score == 0) {
+                    $.log(`\n本次阅读获得0个青豆，等待10s即将开始下次阅读\n`);
+                    if (smallzq == "true") {
+                        await removebody();
+                        $.log("已删除第" + ($.begin) + "个请求，如无需删除请及时提前关掉boxjs内的开关，使用后即关闭")
+                        delbody += 1
+                    }
+                } else if (readres.success == false) {
+                    console.log(`第${$.index}次阅读请求有误，请删除此请求`);
+                    if (smallzq == "true") {
+                        await removebody();
+                        $.log("已删除第" + ($.begin) + "个请求，如无需删除请及时提前关掉boxjs内的开关，使用后即关闭");
+                        delbody += 1
+                    }
                 }
-            } else if (readres.error_code == '0' && data.indexOf('"score":0') > -1 && readres.items.score == 0) {
-                $.log(`\n本次阅读获得0个青豆，等待10s即将开始下次阅读\n`);
-                if (smallzq == "true") {
-                    await removebody();
-                    $.log("已删除第" + ($.begin) + "个请求，如无需删除请及时提前关掉boxjs内的开关，使用后即关闭")
-                    delbody += 1
-                }
-            } else if (readres.success == false) {
-                console.log(`第${$.index}次阅读请求有误，请删除此请求`);
-                if (smallzq == "true") {
-                    await removebody();
-                    $.log("已删除第" + ($.begin) + "个请求，如无需删除请及时提前关掉boxjs内的开关，使用后即关闭");
-                    delbody += 1
-                }
+            } catch (e) {
+                $.log('AutoRead:' + e)
+            } finally {
+                resolve()
             }
-            resolve()
         })
     })
 }
@@ -218,6 +229,9 @@ function batHost(api, body) {
 function readTime() {
     return new Promise((resolve, reject) => {
         $.post(batHost('user/stay.json', timebodyVal), (error, resp, data) => {
+            if (error) {
+                reject()
+            }
             let timeres = JSON.parse(data)
             if (timeres.error_code == 0) {
                 readtimes = timeres.time / 60
