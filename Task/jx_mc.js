@@ -47,41 +47,41 @@ $.appId = 10028;
             const homepageinfo = await GetHomePageInfo();
 
             // 领取金币
-            await $.wait(500);
+            await $.wait(1000);
             await GetCoin(homepageinfo);
 
             // 获取成就任务列表
-            await $.wait(500);
+            await $.wait(1000);
             await GetUserTaskStatusList(1);
-            await $.wait(500);
+            await $.wait(1000);
             await Award();
 
             // 获取每日任务列表（待完成）
-            await $.wait(500);
+            await $.wait(1000);
             await GetUserTaskStatusList(3);
-            await $.wait(500);
+            await $.wait(1000);
             await DoTask();
 
             // 获取每日任务列表（待领取）
-            await $.wait(500);
+            await $.wait(1000);
             await GetUserTaskStatusList(2);
-            await $.wait(500);
+            await $.wait(1000);
             await Award();
 
             // 购物
-            await $.wait(500);
+            await $.wait(1000);
             await UseCoin(homepageinfo)
 
             // 领金蛋
-            await $.wait(500);
+            await $.wait(1000);
             await GetSelfResult(homepageinfo);
 
             // 喂食
-            await $.wait(500);
+            await $.wait(1000);
             await Feed(homepageinfo);
         }
     }
-    await $.wait(500);
+    await $.wait(1000);
     await showMsg();
 })().catch((e) => $.logErr(e))
     .finally(() => $.done());
