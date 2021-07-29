@@ -451,36 +451,42 @@ function Buy() {
 // 领金蛋
 function GetSelfResult(homepageinfo) {
     return new Promise(async (resolve) => {
-        const { petinfo } = homepageinfo;
-        const info = petinfo.filter(x => x.progress === "0" && x.experience == x.lastborn);
-        if (info.length > 0) {
-            const { petid } = info[0];
-            $.get(taskUrl(`operservice/GetSelfResult`, `&type=11&itemid=${petid}`, 'channel,itemid,sceneid,type'), async (err, resp, _data) => {
-                try {
-                    if (!_data || _data.startsWith('<')) {
-                        resolve();
-                        return;
+        try {
+            const { petinfo } = homepageinfo;
+            const info = petinfo.filter(x => x.progress === "0" && x.experience == x.lastborn);
+            if (info.length > 0) {
+                const { petid } = info[0];
+                $.get(taskUrl(`operservice/GetSelfResult`, `&type=11&itemid=${petid}`, 'channel,itemid,sceneid,type'), async (err, resp, _data) => {
+                    try {
+                        if (!_data || _data.startsWith('<')) {
+                            resolve();
+                            return;
+                        }
+                        const {
+                            data: {
+                                addnum,
+                                newnum,
+                            } = {},
+                            message,
+                            ret,
+                        } = JSON.parse(_data);
+                        //$.log(_data);
+                        $.log(`【领取金蛋🥚】 ${ret === 0 ? `${message}，收获${addnum}个金蛋🥚，当前您拥有${newnum}个金蛋🥚，请加大力度～` : message} \n ${$.showMsg ? _data : ""} `);
                     }
-                    const {
-                        data: {
-                            addnum,
-                            newnum,
-                        } = {},
-                        message,
-                        ret,
-                    } = JSON.parse(_data);
-                    //$.log(_data);
-                    $.log(`【领取金蛋🥚】 ${ret === 0 ? `${message}，收获${addnum}个金蛋🥚，当前您拥有${newnum}个金蛋🥚，请加大力度～` : message} \n ${$.showMsg ? _data : ""} `);
-                }
-                catch (e) {
-                    $.logErr(e, resp);
-                }
-                finally {
-                    resolve();
-                }
-            });
-        }
-        else {
+                    catch (e) {
+                        $.logErr(e, resp);
+                    }
+                    finally {
+                        resolve();
+                    }
+                });
+            }
+            else {
+                resolve();
+            }
+        } catch (error) {
+            $.logErr(error);
+        } finally {
             resolve();
         }
     });

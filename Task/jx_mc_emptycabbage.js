@@ -51,11 +51,7 @@ $.homepageinfo = '';
                         await GetSelfResult($.homepageinfo);
                         // 喂食
                         await $.wait(1000);
-                        let result = await Feed($.homepageinfo);
-                        if (result) {
-                            $.tag = true;
-                            break
-                        }
+                        await Feed($.homepageinfo);
                         // 用户信息
                         await $.wait(500);
                         $.homepageinfo = await GetHomePageInfo();
@@ -141,7 +137,7 @@ function Feed(homepageinfo) {
                     try {
                         if (!_data || _data.startsWith('<')) {
                             resolve();
-                            // return;
+                            return;
                         }
                         $.log(_data);
                         const {
@@ -150,12 +146,14 @@ function Feed(homepageinfo) {
                             ret
                         } = JSON.parse(_data);
                         //$.log(_data);
+                        $.tag = true;
                         if (ret != 0) {
-                            $.tag = false;
                             $.log(`【投喂🥬】${message}，今天不要再运行此脚本了~ \n ${$.showMsg ? _data : ""} `);
-                            resolve(true);
+                            if (ret == 2005) {//喂饱了
+                                $.tag = false;
+                                resolve();
+                            }
                         } else {
-                            $.tag = true;
                             $.log(`【投喂🥬】${message}，请加大力度～ \n ${$.showMsg ? _data : ""} `);
                         }
                     }
