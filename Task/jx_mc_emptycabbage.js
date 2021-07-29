@@ -147,7 +147,7 @@ function Feed(homepageinfo) {
                         //$.log(_data);
                         $.tag = true;
                         if (ret != 0) {
-                            $.log(`【投喂🥬】${message}，今天不要再运行此脚本了~ \n ${$.showMsg ? _data : ""} `);
+                            $.log(`【投喂🥬】${message}~ \n ${$.showMsg ? _data : ""} `);
                             if (ret == 2005) {//喂饱了
                                 $.tag = false;
                                 resolve();
