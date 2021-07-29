@@ -43,7 +43,7 @@ $.homepageinfo = '';
                 const { materialinfo } = $.homepageinfo;
                 const info = materialinfo.filter(x => x.type === 1);
                 const { value } = info[0];
-
+                $.tag = true;
                 for (let j = 1; j <= parseInt(value / 10); j++) {
                     if ($.tag === true) {
                         // 领金蛋
