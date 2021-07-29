@@ -33,35 +33,40 @@ $.homepageinfo = '';
     for (let i = 0; i < $.cookieArr.length; i++) {
         $.currentCookie = $.cookieArr[i];
 
-        if ($.currentCookie) {
-            $.userName = decodeURIComponent($.currentCookie.match(/pt_pin=(.+?);/) && $.currentCookie.match(/pt_pin=(.+?);/)[1]);
-            $.index = i + 1;
-            $.log(`\n开始【京东账号${i + 1}】${$.userName}`);
-            $.homepageinfo = await GetHomePageInfo();
+        try {
+            if ($.currentCookie) {
+                $.userName = decodeURIComponent($.currentCookie.match(/pt_pin=(.+?);/) && $.currentCookie.match(/pt_pin=(.+?);/)[1]);
+                $.index = i + 1;
+                $.log(`\n开始【京东账号${i + 1}】${$.userName}`);
+                $.homepageinfo = await GetHomePageInfo();
 
-            const { materialinfo } = $.homepageinfo;
-            const info = materialinfo.filter(x => x.type === 1);
-            const { value } = info[0];
+                const { materialinfo } = $.homepageinfo;
+                const info = materialinfo.filter(x => x.type === 1);
+                const { value } = info[0];
 
-            for (let j = 1; j <= parseInt(value / 10); j++) {
-                if ($.tag === true) {
-                    // 领金蛋
-                    await $.wait(1000);
-                    await GetSelfResult($.homepageinfo);
-                    // 喂食
-                    await $.wait(1000);
-                    let result = await Feed($.homepageinfo);
-                    if (result) {
-                        $.tag = true;
-                        break
+                for (let j = 1; j <= parseInt(value / 10); j++) {
+                    if ($.tag === true) {
+                        // 领金蛋
+                        await $.wait(1000);
+                        await GetSelfResult($.homepageinfo);
+                        // 喂食
+                        await $.wait(1000);
+                        let result = await Feed($.homepageinfo);
+                        if (result) {
+                            $.tag = true;
+                            break
+                        }
+                        // 用户信息
+                        await $.wait(500);
+                        $.homepageinfo = await GetHomePageInfo();
+                    } else {
+                        break;
                     }
-                    // 用户信息
-                    await $.wait(500);
-                    $.homepageinfo = await GetHomePageInfo(i + 1);
-                } else {
-                    break;
                 }
             }
+        } catch (error) {
+            $.log(`\nerror：${error}\n`);
+            continue;
         }
     }
     await $.wait(500);
@@ -70,7 +75,7 @@ $.homepageinfo = '';
     .finally(() => $.done());
 
 // 获取主要信息
-function GetHomePageInfo(index) {
+function GetHomePageInfo() {
     return new Promise(async (resolve) => {
         $.get(taskUrl(`queryservice/GetHomePageInfo`, ``), async (err, resp, _data) => {
             try {
@@ -96,7 +101,7 @@ function GetHomePageInfo(index) {
                     message,
                     ret
                 } = JSON.parse(_data);
-                $.log(`\n【获取账号${index}用户信息📝】：${message}\n${$.showLog ? _data : ""}`);
+                $.log(`\n【获取用户信息📝】：${message}\n${$.showLog ? _data : ""}`);
 
                 // 小鸡id编号列表
                 $.petid = petinfo.filter(x => x.status == 1).map(x => x.petid);
@@ -136,7 +141,7 @@ function Feed(homepageinfo) {
                     try {
                         if (!_data || _data.startsWith('<')) {
                             resolve();
-                            return;
+                            // return;
                         }
                         $.log(_data);
                         const {
