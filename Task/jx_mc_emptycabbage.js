@@ -39,7 +39,7 @@ $.homepageinfo = '';
                 $.index = i + 1;
                 $.log(`\n开始【京东账号${i + 1}】${$.userName}`);
                 $.homepageinfo = await GetHomePageInfo();
-
+                $.log(`\homepageinfo:${JSON.stringify($.homepageinfo)}\n`);
                 const { materialinfo } = $.homepageinfo;
                 const info = materialinfo.filter(x => x.type === 1);
                 const { value } = info[0];
@@ -101,7 +101,7 @@ function GetHomePageInfo() {
                     message,
                     ret
                 } = JSON.parse(_data);
-                $.log(`\n【获取用户信息📝】：${message}\n${$.showLog ? _data : ""}`);
+                $.log(`\n【获取用户信息📝】：${message}\n${$.showLog ? _data : ""}\n${JSON.stringify(petinfo)}`);
 
                 // 小鸡id编号列表
                 $.petid = petinfo.filter(x => x.status == 1).map(x => x.petid);
