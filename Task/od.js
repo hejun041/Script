@@ -1,12 +1,18 @@
 const baseURI = "https://od.zsqc68.com/index/api/"
 const axios = require("axios")
-const odStr = process.env.odStr
+const odStr = "3957@3962@3963"
 const notify = require('./sendNotify');
 
 function get(api, data) {
     return new Promise(async (resolve) => {
         try {
-            let res = await axios.post(`${baseURI}${api}`, data)
+            let res = await axios.post(`${baseURI}${api}`, data,
+                {
+                    headers: {
+                        'Connection': 'keep-alive',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
             if (res && res.data) {
                 console.log(res.data)
                 resolve(res.data)

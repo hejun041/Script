@@ -184,6 +184,7 @@ function requireConfig() {
 function getGoodListByCond(cids, page, pageSize, type, state) {
         return new Promise((resolve, reject) => {
                 let option = taskurl(`${selfDomain}/activity/list?pb=1&cids=${cids}&page=${page}&pageSize=${pageSize}&type=${type}&state=${state}`)
+                console.log('option=====>', JSON.stringify(option))
                 delete option.headers['Cookie']
                 $.get(option, (err, resp, data) => {
                         try {
