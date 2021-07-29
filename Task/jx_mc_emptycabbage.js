@@ -49,10 +49,10 @@ $.homepageinfo = '';
                         await $.wait(1000);
                         await GetSelfResult($.homepageinfo);
                         // 喂食
-                        await $.wait(1000);
+                        await $.wait(1500);
                         await Feed($.homepageinfo);
                         // 用户信息
-                        await $.wait(500);
+                        await $.wait(1000);
                         $.homepageinfo = await GetHomePageInfo();
                     } else {
                         break;
