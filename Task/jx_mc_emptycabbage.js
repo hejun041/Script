@@ -53,13 +53,13 @@ $.homepageinfo = '';
                     let result = await Feed($.homepageinfo);
                     if (result) {
                         $.tag = true;
-                        return
+                        break
                     }
                     // 用户信息
                     await $.wait(500);
                     $.homepageinfo = await GetHomePageInfo(i + 1);
                 } else {
-                    return;
+                    break;
                 }
             }
         }
