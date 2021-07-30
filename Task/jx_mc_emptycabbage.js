@@ -43,8 +43,9 @@ $.homepageinfo = '';
                 const info = materialinfo.filter(x => x.type === 1);
                 const { value } = info[0];
                 $.tag = true;
+                $.count = 0
                 for (let j = 1; j <= parseInt(value / 10); j++) {
-                    if ($.tag === true) {
+                    if ($.tag === true && $.count <= 2) {//火爆三次则退出
                         // 领金蛋
                         await $.wait(1000);
                         await GetSelfResult($.homepageinfo);
@@ -150,6 +151,10 @@ function Feed(homepageinfo) {
                             $.log(`【投喂🥬】${message}~ \n ${$.showMsg ? _data : ""} `);
                             if (ret == 2005) {//喂饱了
                                 $.tag = false;
+                                resolve();
+                            }
+                            if (ret == 1017) { //操作太频繁啦
+                                $.count++
                                 resolve();
                             }
                         } else {
