@@ -161,7 +161,7 @@ function AutoRead() {
                             videoscore += parseInt(readres.items.read_score);
                         }
                     }
-                    if ($.index % 3 == 0) {
+                    if ($.index % 7 == 0) {
                         if ($.isNode() && process.env.YOUTH_ATIME) {
                             timebodyVal = process.env.YOUTH_ATIME;
                         } else {
