@@ -9,8 +9,9 @@
 
 const $ = new Env("中青看点阅读")
 //const notify = $.isNode() ? require('./sendNotify') : '';
-let ReadArr = [], timebodyVal = "";
+let ReadArr = [], timebodyVal = "", timebodysVal = [];
 let YouthBody = $.getdata('youth_autoread') || $.getdata("zqgetbody_body");
+let YouthTimeBody = $.getdata('autotime_zqs') || $.getdata("autotime_zqs");
 let smallzq = $.getdata('youth_cut');
 let indexLast = $.getdata('zqbody_index');
 let artsnum = 0, videosnum = 0;
@@ -160,13 +161,16 @@ function AutoRead() {
                             videoscore += parseInt(readres.items.read_score);
                         }
                     }
-                    if ($.index % 2 == 0) {
+                    if ($.index % 3 == 0) {
                         if ($.isNode() && process.env.YOUTH_ATIME) {
                             timebodyVal = process.env.YOUTH_ATIME;
                         } else {
-                            timebodyVal = $.getdata('autotime_zq');
+                            // timebodyVal = $.getdata('autotime_zq');
+                            timebodysVal = $.getdata('autotime_zqs');
                         }
-                        await readTime()
+                        if ($.index < timebodysVal.length) {
+                            await readTime($.index)
+                        }
                     };
                     if ($.index == ReadArr.length) {
                         $.log($.index + "次任务已全部完成，即将结束")
@@ -226,9 +230,9 @@ function batHost(api, body) {
     }
 }
 
-function readTime() {
+function readTime(index) {
     return new Promise((resolve, reject) => {
-        $.post(batHost('user/stay.json', timebodyVal), (error, resp, data) => {
+        $.post(batHost('user/stay.json', timebodysVal[index]), (error, resp, data) => {
             if (error) {
                 reject()
             }
@@ -243,7 +247,7 @@ function readTime() {
 }
 
 function Getbody() {
-    if ($request && ($request.url.match(/\/article\/info/) || $request.url.match(/\/article\/complete/))) {
+    if ($request && ($request.url.match(/\/v5\/article\/info.json/) || $request.url.match(/\/v5\/article\/detail.json/))) {
         if ($request.url.match(/complete/)) {
             bodyVal = $request.body
         } else {
@@ -266,9 +270,24 @@ function Getbody() {
         }
     } else if ($request && $request.method != `OPTIONS` && $request.url.match(/\/v5\/user\/stay/)) {
         const timebodyVal = $request.body;
-        if (timebodyVal) $.setdata(timebodyVal, 'autotime_zq');
+        // if (timebodyVal) $.setdata(timebodyVal, 'autotime_zq');
         $.log(`${$.name}获取阅读时长: 成功, timebodyVal: ${timebodyVal}`);
         $.msg($.name, `获取阅读时长: 成功🎉`, ``)
+        if (YouthTimeBody) {
+            if (YouthTimeBody.indexOf(timebodyVal) > -1) {
+                $.log("此阅读时长请求已存在，本次跳过")
+            } else if (YouthTimeBody.indexOf(timebodyVal) == -1) {
+                YouthTimeBodys = YouthTimeBody + "&" + timebodyVal;
+                $.setdata(YouthTimeBodys, 'autotime_zqs');
+                $.log(`${$.name}获取阅读时长: 成功, YouthTimeBodys: ${timebodyVal}`);
+                bodys = YouthTimeBodys.split("&")
+                $.msg($.name, "获取第" + bodys.length + "个阅读时长请求: 成功🎉", ``)
+            }
+        } else {
+            $.setdata(timebodyVal, 'autotime_zqs');
+            $.log(`${$.name}获取阅读时长: 成功, YouthTimeBodys: ${timebodyVal}`);
+            $.msg($.name, `获取第一个阅读时长请求: 成功🎉`, ``)
+        }
     }
 }
 
