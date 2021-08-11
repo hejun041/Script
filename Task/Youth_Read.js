@@ -271,8 +271,8 @@ function Getbody() {
     } else if ($request && $request.method != `OPTIONS` && $request.url.match(/\/v5\/user\/stay/)) {
         const timebodyVal = $request.body;
         // if (timebodyVal) $.setdata(timebodyVal, 'autotime_zq');
-        $.log(`${$.name}获取阅读时长: 成功, timebodyVal: ${timebodyVal}`);
-        $.msg($.name, `获取阅读时长: 成功🎉`, ``)
+        // $.log(`${$.name}获取阅读时长: 成功, timebodyVal: ${timebodyVal}`);
+        // $.msg($.name, `获取阅读时长: 成功🎉`, ``)
         if (YouthTimeBody) {
             if (YouthTimeBody.indexOf(timebodyVal) > -1) {
                 $.log("此阅读时长请求已存在，本次跳过")

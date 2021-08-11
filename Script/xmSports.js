@@ -87,7 +87,7 @@ async function login1(phone, password) {
 async function login2(code) {
   const options = {
     "url": `https://account.huami.com/v2/client/login`,
-    "body": `app_name=com.xiaomi.hm.health&code=${code}&app_version=4.9.0&country_code=CN&device_id=02%3A00%3A00%3A00%3A00%3A00&device_model=android_phone&grant_type=access_token&third_name=huami_phone`,
+    "body": `app_name=com.xiaomi.hm.health&code=${code}&app_version=5.3.0&country_code=CN&device_id=02%3A00%3A00%3A00%3A00%3A00&device_model=android_phone&grant_type=access_token&third_name=huami_phone`,
     "headers": {
       "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
       "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 9; Note9 Build/PKQ1.181203.001)",
@@ -166,7 +166,7 @@ function change_step(app_token, user_id) {
 
 function get_app_token(login_token, headers) {
   return new Promise(resolve => {
-    $.get({ url: `https://account-cn.huami.com/v1/client/app_tokens?app_name=com.xiaomi.hm.health&dn=api-user.huami.com%2Capi-mifit.huami.com%2Capp-analytics.huami.com&login_token=${login_token}&os_version=4.1.0`, headers }, (err, resp, data) => {
+    $.get({ url: `https://account-cn.huami.com/v1/client/app_tokens?app_name=com.xiaomi.hm.health&dn=api-user.huami.com%2Capi-mifit.huami.com%2Capp-analytics.huami.com&login_token=${login_token}&os_version=5.3.0`, headers }, (err, resp, data) => {
       try {
         if (err) {
           console.log(`${JSON.stringify(err)}`)
