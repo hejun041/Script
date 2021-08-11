@@ -108,7 +108,7 @@ function getwzbody() {
                 $.setdata(wzbodys, 'wzbody');
                 $.log(`${$.name}获取阅读: 成功, wzbodys: ${bodyVal}`);
                 bodys = wzbodys.split("&")
-                // $.msg($.name, "获取第" + bodys.length + "个阅读请求: 成功🎉", ``)
+                $.msg($.name, "获取第" + bodys.length + "个阅读请求: 成功🎉", ``)
             }
         } else {
             $.setdata(bodyVal, 'wzbody');
@@ -148,7 +148,7 @@ function wzjl(body, timeout = 0) {
 
 
 function getjc_timebody() {
-    if ($request.url.match(/\/v5\/article\/stay.json/)) {
+    if ($request.url.match(/\/v5\/user\/stay.json/)) {
         bodyVal = $request.body
         // console.log(encodeURIComponent(bodyVal1))
         // bodyVal = 'p='+encodeURIComponent(bodyVal1)
