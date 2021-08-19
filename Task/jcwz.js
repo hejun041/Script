@@ -148,7 +148,7 @@ function wzjl(body, timeout = 0) {
 
 
 function getjc_timebody() {
-    if ($request.url.match(/\/v5\/user\/stay.json/)) {
+    if ($request.url.match("stay.json")) {
         bodyVal = $request.body
         // console.log(encodeURIComponent(bodyVal1))
         // bodyVal = 'p='+encodeURIComponent(bodyVal1)

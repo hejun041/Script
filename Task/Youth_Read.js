@@ -202,6 +202,9 @@ function AutoRead() {
 }
 
 function removebody() {
+    if ($.isNode()) {
+        return;
+    }
     if (articlebody !== ReadArr[0]) {
         smallbody = $.getdata('youth_autoread').replace("&" + articlebody, "");
     } else {
@@ -222,7 +225,7 @@ function batHost(api, body) {
             'device-model': 'V1986A',
             'os-version': 'RP1A.200720.012+release-keys',
             'request_time': new Date().getTime(),
-            'app-version': '3.0.7',
+            'app-version': '3.3.1',
             'phone-sim': 1,
             'carrier': '%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8'
         },
@@ -247,7 +250,10 @@ function readTime(index) {
 }
 
 function Getbody() {
-    if ($request && ($request.url.match(/\/v5\/article\/info.json/) || $request.url.match(/\/v5\/article\/detail.json/))) {
+    // if ($request && ($request.url.match(/\/article\/info/)|| $request.url.match(/\/article\/complete/))) {
+    if ($request && ($request.url.match(/\/article\/info/) ||
+        $request.url.match(/\/article\/detail/) ||
+        $request.url.match(/\/article\/complete/))) {
         if ($request.url.match(/complete/)) {
             bodyVal = $request.body
         } else {
