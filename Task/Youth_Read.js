@@ -225,7 +225,7 @@ function batHost(api, body) {
             'device-model': 'V1986A',
             'os-version': 'RP1A.200720.012+release-keys',
             'request_time': new Date().getTime(),
-            'app-version': '3.3.1',
+            'app-version': '3.5.5',
             'phone-sim': 1,
             'carrier': '%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8'
         },

@@ -23,6 +23,16 @@ let gainscore = 0, lookscore = 0;
 let StartBody = [], LookBody = [];
 let startbodys = $.getdata('youth_start');
 let lookbodys = $.getdata('youth_look')
+let zq_cookie = $.isNode() ? (process.env.zq_cookie ? process.env.zq_cookie : "") : ($.getdata('zq_cookie') ? $.getdata('zq_cookie') : "")
+let zq_cookieArr = []
+let zq_cookies = ""
+
+const rewardheader = {
+    'device-platform': 'android',
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Content-Length': '1199',
+    'Host': 'kandian.wkandian.com'
+}
 
 if (isGetCookie = typeof $request !== `undefined`) {
     GetCookie();
@@ -67,12 +77,36 @@ if (!$.isNode() && !startbodys.indexOf("&") == -1) {
         }
     })
 }
+
+if (!zq_cookie) {
+    $.done()
+}
+else if (zq_cookie.indexOf("@") == -1 && zq_cookie.indexOf("@") == -1) {
+    zq_cookieArr.push(zq_cookie)
+}
+else if (zq_cookie.indexOf("@") > -1) {
+    zq_cookies = zq_cookie.split("@")
+}
+else if (process.env.zq_cookie && process.env.zq_cookie.indexOf('@') > -1) {
+    zq_cookieArr = process.env.zq_cookie.split('@');
+    console.log(`您选择的是用"@"隔开\n`)
+}
+else {
+    zq_cookies = [process.env.zq_cookie]
+};
+Object.keys(zq_cookies).forEach((item) => {
+    if (zq_cookies[item]) {
+        zq_cookieArr.push(zq_cookies[item])
+    }
+})
+
 timeZone = new Date().getTimezoneOffset() / 60;
 timestamp = Date.now() + (8 + timeZone) * 60 * 60 * 1000;
 bjTime = new Date(timestamp).toLocaleString('zh', {
     hour12: false,
     timeZoneName: 'long'
 });
+hours = new Date().getHours();
 console.log(`\n === 脚本执行 ${bjTime} ===\n`);
 !(async () => {
     $.log(`您共提供${startArr.length}次浏览赚任务`)
@@ -104,6 +138,58 @@ console.log(`\n === 脚本执行 ${bjTime} ===\n`);
     if ($.isNode()) {
         //await notify.sendNotify($.name，`共完成${$.index}次任务，\n共计获得${gainscore}个青豆`
     }
+    if (hours > 18) {
+        console.log(`共${zq_cookieArr.length}个cookie`)
+        for (let k = 0; k < zq_cookieArr.length; k++) {
+            bodyVal = zq_cookieArr[k].split('&uid=')[0];
+            var time1 = Date.parse(new Date()).toString();
+            time1 = time1.substr(0, 10);
+
+            cookie = bodyVal.replace(/zqkey=/, "cookie=")
+            cookie_id = cookie.replace(/zqkey_id=/, "cookie_id=")
+            zq_cookie1 = cookie_id + '&device_brand=xfdg&device_id=cc7dgdsgfsz83e&device_model=1gx&device_platform=android&device_type=android&inner_version=202107261526&mi=0&openudid=cc7dgdsgfsz83e&os_api=27&os_version=bdftgsdfga&phone_network=WIFI&phone_sim=1' + '&request_time=' + time1 + '&time=' + time1 + '&' + bodyVal
+            //console.log(`${zq_cookie1}`)
+            console.log(`--------第 ${k + 1} 个账号看看赚上方宝箱奖励执行中--------\n`)
+            for (let k = 0; k < 3; k++) {
+                id = k.toString()
+                await openbox(id, zq_cookie1)
+                await $.wait(30000);
+
+            }
+
+            console.log("\n\n")
+
+        }
+
+
+        function openbox(id, zq_cookie1, timeout = 0) {
+            return new Promise((resolve) => {
+                let url = {
+                    url: 'https://kandian.wkandian.com/WebApi/Nameless/getBoxReward?id=' + id + '&' + zq_cookie1,
+                    headers: {
+                        'Host': 'kandian.wkandian.com',
+                        //'Referer': 'https://kandian.wkandian.com/h5/20190527watchMoney/?' +zq_cookie1
+                        'Referer': 'https://kandian.wkandian.com/h5/20190527watchMoney/?keyword_wyq=woyaoq.com&access=WIFI&app-version=8.1.2&app_version=8.1.2&carrier=%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8&channel=c1005&' + zq_cookie1
+                    },
+                }
+                $.get(url, async (err, resp, data) => {
+                    try {
+
+                        const result = JSON.parse(data)
+                        if (result.status == 1) {
+                            console.log(result.data)
+                        } else {
+                            console.log(result)
+                        }
+                    } catch (e) {
+                    } finally {
+                        resolve()
+                    }
+                }, timeout)
+            })
+        }
+    }
+
 })()
     .catch((e) => $.logErr(e))
     .finally(() => $.done())
@@ -255,7 +341,7 @@ function gainHost(api, body) {
             'device-model': 'V1986A',
             'os-version': 'RP1A.200720.012+release-keys',
             'request_time': new Date().getTime(),
-            'app-version': '3.3.1',
+            'app-version': '3.5.5',
             'phone-sim': 1,
             'carrier': '%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8'
         },
