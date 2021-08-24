@@ -138,7 +138,7 @@ console.log(`\n === 脚本执行 ${bjTime} ===\n`);
     if ($.isNode()) {
         //await notify.sendNotify($.name，`共完成${$.index}次任务，\n共计获得${gainscore}个青豆`
     }
-    if (hours > 18) {
+    if (hours = 16) {
         console.log(`共${zq_cookieArr.length}个cookie`)
         for (let k = 0; k < zq_cookieArr.length; k++) {
             bodyVal = zq_cookieArr[k].split('&uid=')[0];
