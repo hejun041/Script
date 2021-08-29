@@ -37,6 +37,7 @@ const rewardheader = {
 if (isGetCookie = typeof $request !== `undefined`) {
     GetCookie();
     $.done()
+    return;
 }
 if (!$.isNode() && !lookbodys) {
     $.msg($.name, "您未获取看看赚请求，请先获取");
