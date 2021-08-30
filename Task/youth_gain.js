@@ -23,6 +23,8 @@ let gainscore = 0, lookscore = 0;
 let StartBody = [], LookBody = [];
 let startbodys = $.getdata('youth_start');
 let lookbodys = $.getdata('youth_look')
+let indexLast = $.getdata('youth_look_index') || 0;
+let indexLast1 = $.getdata('youth_start_index') || 0;
 let zq_cookie = $.isNode() ? (process.env.zq_cookie ? process.env.zq_cookie : "") : ($.getdata('zq_cookie') ? $.getdata('zq_cookie') : "")
 let zq_cookieArr = []
 let zq_cookies = ""
@@ -112,7 +114,15 @@ console.log(`\n === 脚本执行 ${bjTime} ===\n`);
 !(async () => {
     $.log(`您共提供${startArr.length}次浏览赚任务`)
     if (startArr.length !== 0) {
-        for (let i = 0; i < startArr.length; i++) {
+        $.begin = indexLast ? parseInt(indexLast) : 1;
+        if ($.begin + 1 < startArr.length) {
+            $.log("\n上次运行到第" + $.begin + "次终止，本次从" + (parseInt($.begin) + 1) + "次开始");
+        } else {
+            $.log("由于上次缩减剩余请求数已小于总请求数，本次从头开始");
+            indexLast = 0, $.begin = 0
+        }
+        $.index = 0
+        for (let i = indexLast; i < startArr.length; i++) {
             if (startArr[i]) {
                 gainbody = startArr[i];
                 $.index = i + 1;
@@ -125,15 +135,23 @@ console.log(`\n === 脚本执行 ${bjTime} ===\n`);
     }
     $.log(`\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n您共提供${lookArr.length}次看看赚任务\n`)
     if (lookArr.length !== 0) {
-        for (let k = 0; k < lookArr.length; k++) {
+        $.begin1 = indexLast1 ? parseInt(indexLast1) : 1;
+        if ($.begin1 + 1 < lookArr.length) {
+            $.log("\n上次运行到第" + $.begin1 + "次终止，本次从" + (parseInt($.begin1) + 1) + "次开始");
+        } else {
+            $.log("由于上次缩减剩余请求数已小于总请求数，本次从头开始");
+            indexLast1 = 0, $.begin1 = 0
+        }
+        $.index1 = 0
+        for (let k = indexLast1; k < lookArr.length; k++) {
             if (lookArr[k]) {
                 lookbody = lookArr[k];
-                $.index = k + 1;
-                $.log(`-------------------------\n\n开始中青看点看看赚第${$.index}次任务`)
+                $.index1 = k + 1;
+                $.log(`-------------------------\n\n开始中青看点看看赚第${$.index1}次任务`)
             }
             await lookStart();
         }
-        console.log(`-------------------------\n\n中青看点共完成${$.index}次任务，共计获得${lookscore}个青豆，看看赚任务全部结束`);
+        console.log(`-------------------------\n\n中青看点共完成${$.index1}次任务，共计获得${lookscore}个青豆，看看赚任务全部结束`);
         $.msg("中青看点看看赚", '共完成' + (lookArr.length + startArr.length) + '次任务，共计获得' + parseInt(lookscore + gainscore) + '个青豆');
     }
     if ($.isNode()) {
