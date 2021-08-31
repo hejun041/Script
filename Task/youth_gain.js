@@ -36,11 +36,6 @@ const rewardheader = {
     'Host': 'kandian.wkandian.com'
 }
 
-if (isGetCookie = typeof $request !== `undefined`) {
-    GetCookie();
-    $.done()
-    return;
-}
 if (!$.isNode() && !lookbodys) {
     $.msg($.name, "您未获取看看赚请求，请先获取");
 } else if (!$.isNode() && !startbodys) {
@@ -365,42 +360,6 @@ function gainHost(api, body) {
             'carrier': '%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8'
         },
         body: body
-    }
-}
-
-
-function GetCookie() {
-    if ($request && $request.method != 'OPTIONS' && $request.url.match(/\/browse_start\.json/)) {
-        startbodyVal = $request.body;
-        if (startbodys) {
-            if (startbodys.indexOf(startbodyVal) > -1) {
-                $.msg($.name, '阅读请求重复，本次跳过');
-                return
-            } else if (startbodys.indexOf(startbodyVal) == -1) {
-                startbodys += "&" + startbodyVal
-            }
-        } else {
-            startbodys = $request.body
-        }
-        $.setdata(startbodys, 'youth_start');
-        $.log("获取浏览赚请求: " + startbodyVal);
-        $.msg($.name, '获取浏览赚请求成功')
-    } else if ($request && $request.method != 'OPTIONS' && $request.url.match(/\/adlickstart\.json/)) {
-        seeVal = $request.body;
-        if (lookbodys) {
-            if (lookbodys.indexOf(seeVal) > -1) {
-                $.msg($.name, '阅读请求重复，本次跳过');
-                return
-            } else if (lookbodys.indexOf(seeVal) == -1) {
-                lookbodys += "&" + seeVal
-                $.msg($.name, '获取看看赚请求' + lookbodys.split("&").length + '成功')
-            }
-        } else {
-            lookbodys = $request.body
-            $.msg($.name, '获取看看赚请求成功')
-        }
-        $.setdata(lookbodys, 'youth_look');
-        $.log("获取浏览赚请求: " + seeVal)
     }
 }
 

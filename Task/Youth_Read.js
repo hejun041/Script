@@ -12,7 +12,7 @@ const $ = new Env("中青看点阅读")
 let ReadArr = [], timebodyVal = "", timebodysVal = [];
 let YouthBody = $.getdata('youth_autoread') || $.getdata("zqgetbody_body");
 let YouthTimeBody = $.getdata('autotime_zqs') || $.getdata("autotime_zqs");
-let smallzq = $.getdata('youth_cut');
+let smallzq = $.getdata('youth_cut') || "true";
 let indexLast = $.getdata('zqbody_index');
 let artsnum = 0, videosnum = 0;
 let videoscore = 0, readscore = 0;
