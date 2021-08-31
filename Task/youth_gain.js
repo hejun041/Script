@@ -215,6 +215,9 @@ function GainStart() {
                 reject()
             }
             try {
+                $.begin = $.begin + 1;
+            let res = $.begin % startArr.length;
+            $.setdata(res + "", 'youth_look_index');
                 let startres = JSON.parse(data);
                 if (startres.success == false) {
                     smbody = $.getdata('youth_start').replace(gainbody + "&", "");
@@ -246,6 +249,11 @@ function lookStart() {
                 reject()
             }
             try {
+                $.begin1 = $.begin1 + 1;
+
+            let res = $.begin1 % lookArr.length;
+
+            $.setdata(res + "", 'youth_start_index');
                 startlk = JSON.parse(data);
                 if (startlk.success == false) {
                     smbody = $.getdata('youth_look').replace(lookbody + "&", "");
