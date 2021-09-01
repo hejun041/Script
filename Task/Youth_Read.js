@@ -20,16 +20,12 @@ let artArr = [], delbody = 0;
 if (isGetbody = typeof $request !== `undefined`) {
     Getbody();
     $.done()
-    return
-}
-let lastIndex = $.getdata('zqbody_index')
-if (!$.isNode() && !YouthBody == true) {
+} else if (!$.isNode() && !YouthBody == true) {
     $.log("您未获取阅读请求，请求阅读后获取")
     $.msg($.name, "您未获取阅读请求，请求阅读后获取", "", {
         'open-url': "https://kandian.wkandian.com/u/UnEWm"
     })
     $.done()
-    return
 } else if (!$.isNode() && YouthBody.indexOf("&") == -1) {
     ReadArr.push(YouthBody)
 } else {

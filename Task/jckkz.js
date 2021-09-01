@@ -54,7 +54,6 @@ if (!jc_cookie) {
         "open-url": "给您劈个叉吧"
     });
     $.done()
-    return
 }
 else if (jc_cookie.indexOf("@") == -1 && jc_cookie.indexOf("@") == -1) {
     jc_cookieArr.push(jc_cookie)
@@ -79,7 +78,6 @@ if (!lookStartbody) {
         "open-url": "给您劈个叉吧"
     });
     $.done()
-    return
 }
 else if (lookStartbody.indexOf("&") == -1) {
     lookStartbodyArr.push(lookStartbody)
@@ -106,7 +104,6 @@ days = new Date().getDay();
     if (typeof $request !== "undefined") {
         await getlookStartbody()
         $.done()
-        return
     } else {
         statusObj = JSON.parse(status)
         if (statusObj.day == days && statusObj.isfinished) {
