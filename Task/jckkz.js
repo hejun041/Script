@@ -25,7 +25,7 @@ let jc_cookie = $.isNode() ? (process.env.jc_cookie ? process.env.jc_cookie : ""
 let jc_cookieArr = []
 let jc_cookies = ""
 let indexLast = $.getdata('jckkz_index') || 0;
-let status = $.getdata('jc_kkz_status') || `{ "isfinished": true, "day": 3 }`;
+let status = $.getdata('jc_kkz_status') || `{ "isfinished": false, "day": 3 }`;
 let statusObj = { "isfinished": false, "day": 1 }
 
 const lookheader = {
