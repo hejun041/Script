@@ -1,56 +1,32 @@
 /*
-更新时间: 2021-05-22 21:55
+更新时间: 2021-09-1 10:00
 
-中青看点浏览赚+看看赚任务，手动完成任务，获取请求体，支持boxjs及Github Actions，多请求用"&"分开，点击任务，支持自动获取请求
+中青看点浏览赚任务，手动完成任务，获取请求体，支持boxjs及Github Actions，多请求用"&"分开，点击任务，支持自动获取请求
 
 https:\/\/kandian\.wkandian\.com\/v5\/task\/browse_start\.json url script-request-body youth_gain.js
 
 https:\/\/kandian\.wkandian\.com\/v5\/nameless\/adlickstart\.json url script-request-body youth_gain.js
 
-  强制增加中青看点看看赚入口，和签到Cookie有冲突，请使用时添加，不用时请禁用
-  https:\/\/kd\.youth\.cn\/WebApi\/NewTaskIos\/getTaskList url script-response-body youdata.js
-
-
 多个请求体时用'&'号或者换行隔开"，本脚本可自动删除失效请求，请须知 ‼️
 
 */
 
-
-const $ = new Env("中青看点浏览赚&看看赚")
+const $ = new Env("中青看点浏览赚")
 //const notify = $.isNode() ? require('./sendNotify') : '';
-let startArr = [], lookArr = [];
-let gainscore = 0, lookscore = 0;
-let StartBody = [], LookBody = [];
+let startArr = [];
+let gainscore = 0;
+let StartBody = [];
 let startbodys = $.getdata('youth_start');
-let lookbodys = $.getdata('youth_look')
 let indexLast = $.getdata('youth_look_index') || 0;
-let indexLast1 = $.getdata('youth_start_index') || 0;
-let zq_cookie = $.isNode() ? (process.env.zq_cookie ? process.env.zq_cookie : "") : ($.getdata('zq_cookie') ? $.getdata('zq_cookie') : "")
-let zq_cookieArr = []
-let zq_cookies = ""
 
-const rewardheader = {
-    'device-platform': 'android',
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Content-Length': '1199',
-    'Host': 'kandian.wkandian.com'
-}
-
-if (!$.isNode() && !lookbodys) {
-    $.msg($.name, "您未获取看看赚请求，请先获取");
-} else if (!$.isNode() && !startbodys) {
+if (!$.isNode() && !startbodys) {
     $.msg($.name, "您未获取浏览赚请求，请先获取");
 }
 if (!$.isNode() && !startbodys.indexOf("&") == -1) {
     startArr.push(startbodys)
-} else if (!$.isNode() && !lookbodys.indexOf("&") == -1) {
-    lookArr.push(lookbodys)
 } else {
     if (!$.isNode() && !startbodys.indexOf("&") > -1) {
         StartBody = startbodys.split('&');
-    }
-    if (!$.isNode() && !lookbodys.indexOf("&") > -1) {
-        LookBody = lookbodys.split('&');
     }
     if ($.isNode()) {
         if (process.env.YOUTH_START && process.env.YOUTH_START.indexOf('&') > -1) {
@@ -58,45 +34,13 @@ if (!$.isNode() && !startbodys.indexOf("&") == -1) {
         } else {
             StartBody = [process.env.YOUTH_START]
         };
-        if (process.env.YOUTH_LOOK && process.env.YOUTH_LOOK.indexOf('&') > -1) {
-            LookBody = process.env.YOUTH_LOOK.split('&');
-        } else {
-            LookBody = [process.env.YOUTH_LOOK]
-        }
     }
     Object.keys(StartBody).forEach((item) => {
         if (StartBody[item]) {
             startArr.push(StartBody[item])
         }
     });
-    Object.keys(LookBody).forEach((item) => {
-        if (LookBody[item]) {
-            lookArr.push(LookBody[item])
-        }
-    })
 }
-
-if (!zq_cookie) {
-    $.done()
-}
-else if (zq_cookie.indexOf("@") == -1 && zq_cookie.indexOf("@") == -1) {
-    zq_cookieArr.push(zq_cookie)
-}
-else if (zq_cookie.indexOf("@") > -1) {
-    zq_cookies = zq_cookie.split("@")
-}
-else if (process.env.zq_cookie && process.env.zq_cookie.indexOf('@') > -1) {
-    zq_cookieArr = process.env.zq_cookie.split('@');
-    console.log(`您选择的是用"@"隔开\n`)
-}
-else {
-    zq_cookies = [process.env.zq_cookie]
-};
-Object.keys(zq_cookies).forEach((item) => {
-    if (zq_cookies[item]) {
-        zq_cookieArr.push(zq_cookies[item])
-    }
-})
 
 timeZone = new Date().getTimezoneOffset() / 60;
 timestamp = Date.now() + (8 + timeZone) * 60 * 60 * 1000;
@@ -128,82 +72,9 @@ console.log(`\n === 脚本执行 ${bjTime} ===\n`);
         console.log(`-------------------------\n\n中青看点共完成${$.index}次任务，共计获得${gainscore}个青豆，浏览赚任务全部结束`);
         //$.msg("中青看点浏览赚", `共完成${$.index}次任务`+`  共计获得${gainscore}个青豆`);
     }
-    $.log(`\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n您共提供${lookArr.length}次看看赚任务\n`)
-    if (lookArr.length !== 0) {
-        $.begin1 = indexLast1 ? parseInt(indexLast1) : 1;
-        if ($.begin1 + 1 < lookArr.length) {
-            $.log("\n上次运行到第" + $.begin1 + "次终止，本次从" + (parseInt($.begin1) + 1) + "次开始");
-        } else {
-            $.log("由于上次缩减剩余请求数已小于总请求数，本次从头开始");
-            indexLast1 = 0, $.begin1 = 0
-        }
-        $.index1 = 0
-        for (let k = indexLast1; k < lookArr.length; k++) {
-            if (lookArr[k]) {
-                lookbody = lookArr[k];
-                $.index1 = k + 1;
-                $.log(`-------------------------\n\n开始中青看点看看赚第${$.index1}次任务`)
-            }
-            await lookStart();
-        }
-        console.log(`-------------------------\n\n中青看点共完成${$.index1}次任务，共计获得${lookscore}个青豆，看看赚任务全部结束`);
-        $.msg("中青看点看看赚", '共完成' + (lookArr.length + startArr.length) + '次任务，共计获得' + parseInt(lookscore + gainscore) + '个青豆');
-    }
     if ($.isNode()) {
         //await notify.sendNotify($.name，`共完成${$.index}次任务，\n共计获得${gainscore}个青豆`
     }
-    if (hours = 16) {
-        console.log(`共${zq_cookieArr.length}个cookie`)
-        for (let k = 0; k < zq_cookieArr.length; k++) {
-            bodyVal = zq_cookieArr[k].split('&uid=')[0];
-            var time1 = Date.parse(new Date()).toString();
-            time1 = time1.substr(0, 10);
-
-            cookie = bodyVal.replace(/zqkey=/, "cookie=")
-            cookie_id = cookie.replace(/zqkey_id=/, "cookie_id=")
-            zq_cookie1 = cookie_id + '&device_brand=xfdg&device_id=cc7dgdsgfsz83e&device_model=1gx&device_platform=android&device_type=android&inner_version=202107261526&mi=0&openudid=cc7dgdsgfsz83e&os_api=27&os_version=bdftgsdfga&phone_network=WIFI&phone_sim=1' + '&request_time=' + time1 + '&time=' + time1 + '&' + bodyVal
-            //console.log(`${zq_cookie1}`)
-            console.log(`--------第 ${k + 1} 个账号看看赚上方宝箱奖励执行中--------\n`)
-            for (let k = 0; k < 3; k++) {
-                id = k.toString()
-                await openbox(id, zq_cookie1)
-                await $.wait(30000);
-
-            }
-
-            console.log("\n\n")
-
-        }
-
-
-        function openbox(id, zq_cookie1, timeout = 0) {
-            return new Promise((resolve) => {
-                let url = {
-                    url: 'https://kandian.wkandian.com/WebApi/Nameless/getBoxReward?id=' + id + '&' + zq_cookie1,
-                    headers: {
-                        'Host': 'kandian.wkandian.com',
-                        //'Referer': 'https://kandian.wkandian.com/h5/20190527watchMoney/?' +zq_cookie1
-                        'Referer': 'https://kandian.wkandian.com/h5/20190527watchMoney/?keyword_wyq=woyaoq.com&access=WIFI&app-version=8.1.2&app_version=8.1.2&carrier=%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8&channel=c1005&' + zq_cookie1
-                    },
-                }
-                $.get(url, async (err, resp, data) => {
-                    try {
-
-                        const result = JSON.parse(data)
-                        if (result.status == 1) {
-                            console.log(result.data)
-                        } else {
-                            console.log(result)
-                        }
-                    } catch (e) {
-                    } finally {
-                        resolve()
-                    }
-                }, timeout)
-            })
-        }
-    }
-
 })()
     .catch((e) => $.logErr(e))
     .finally(() => $.done())
@@ -242,47 +113,6 @@ function GainStart() {
     })
 }
 
-function lookStart() {
-    return new Promise((resolve, reject) => {
-        $.post(gainHost('nameless/adlickstart.json', lookbody), async (error, resp, data) => {
-            if (error) {
-                reject()
-            }
-            try {
-                $.begin1 = $.begin1 + 1;
-
-                let res = $.begin1 % lookArr.length;
-
-                $.setdata(res + "", 'youth_start_index');
-                startlk = JSON.parse(data);
-                if (startlk.success == false) {
-                    smbody = $.getdata('youth_look').replace(lookbody + "&", "");
-                    $.setdata(smbody, 'youth_look');
-                    $.log(startlk.message + "已自动删除")
-                } else {
-                    comstate = startlk.items.comtele_state;
-                    if (comstate == 0) {
-                        $.log("任务开始，" + startlk.items.banner_id + startlk.message);
-                        for (let j = 0; j < startlk.items.see_num - startlk.items.read_num; j++) {
-                            $.log("任务执行第" + parseInt(j + 1) + "次")
-                            await $.wait(8000);
-                            await lookstatus()
-                        }
-                        await $.wait(10000);
-                        await lookEnd()
-                    } else if (comstate == 1) {
-                        $.log("任务:" + startlk.items.banner_id + "已完成，本次跳过");
-                    }
-                }
-            } catch (e) {
-                $.log('lookStart:' + e)
-            } finally {
-                resolve()
-            }
-        })
-    })
-}
-
 function GainEnd() {
     return new Promise((resolve, reject) => {
         $.post(gainHost('task/browse_end.json', gainbody), (error, resp, data) => {
@@ -299,51 +129,6 @@ function GainEnd() {
                 }
             } catch (e) {
                 $.log('GainEnd:' + e)
-            } finally {
-                resolve()
-            }
-        })
-    })
-}
-
-function lookstatus() {
-    return new Promise((resolve, reject) => {
-        $.post(gainHost('nameless/bannerstatus.json', lookbody), (error, resp, data) => {
-            if (error) {
-                reject()
-            }
-            try {
-                let endres = JSON.parse(data);
-                if (endres.success == true) {
-                    $.log("任务" + endres.items.banner_id + endres.message);
-                } else {
-                    $.log(endres.message)
-                }
-            } catch (e) {
-                $.log('lookstatus:' + e)
-            } finally {
-                resolve()
-            }
-        })
-    })
-}
-
-function lookEnd() {
-    return new Promise((resolve, reject) => {
-        $.post(gainHost('nameless/adlickend.json', lookbody), (error, resp, data) => {
-            if (error) {
-                reject()
-            }
-            try {
-                let endres = JSON.parse(data);
-                if (endres.success == true) {
-                    $.log("任务" + endres.items.banner_id + endres.message + "，" + endres.items.desc)
-                    lookscore += parseInt(endres.items.score)
-                } else {
-                    $.log(endres.message)
-                }
-            } catch (e) {
-                $.log('lookEnd:' + e)
             } finally {
                 resolve()
             }

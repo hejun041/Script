@@ -1,74 +1,43 @@
 /*
-更新时间: 2021-05-22 21:55
+更新时间: 2021-09-1 10:00
 
-中青看点浏览赚+看看赚任务，手动完成任务，获取请求体，支持boxjs及Github Actions，多请求用"&"分开，点击任务，支持自动获取请求
+中青看点看看赚任务，手动完成任务，获取请求体，支持boxjs及Github Actions，多请求用"&"分开，点击任务，支持自动获取请求
 
 https:\/\/kandian\.wkandian\.com\/v5\/task\/browse_start\.json url script-request-body youth_gain.js
 
 https:\/\/kandian\.wkandian\.com\/v5\/nameless\/adlickstart\.json url script-request-body youth_gain.js
 
-  强制增加中青看点看看赚入口，和签到Cookie有冲突，请使用时添加，不用时请禁用
-  https:\/\/kd\.youth\.cn\/WebApi\/NewTaskIos\/getTaskList url script-response-body youdata.js
-
-
 多个请求体时用'&'号或者换行隔开"，本脚本可自动删除失效请求，请须知 ‼️
 
 */
 
-
-const $ = new Env("中青看点浏览赚&看看赚")
+const $ = new Env("中青看点看看赚")
 //const notify = $.isNode() ? require('./sendNotify') : '';
-let startArr = [], lookArr = [];
-let gainscore = 0, lookscore = 0;
-let StartBody = [], LookBody = [];
-let startbodys = $.getdata('youth_start');
+let lookArr = [];
+let lookscore = 0;
+let LookBody = [];
 let lookbodys = $.getdata('youth_look')
-let indexLast = $.getdata('youth_look_index') || 0;
-let indexLast1 = $.getdata('youth_start_index') || 0;
+let indexLast = $.getdata('youth_start_index') || 0;
 let zq_cookie = $.isNode() ? (process.env.zq_cookie ? process.env.zq_cookie : "") : ($.getdata('zq_cookie') ? $.getdata('zq_cookie') : "")
 let zq_cookieArr = []
 let zq_cookies = ""
 
-const rewardheader = {
-    'device-platform': 'android',
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Content-Length': '1199',
-    'Host': 'kandian.wkandian.com'
-}
-
 if (!$.isNode() && !lookbodys) {
     $.msg($.name, "您未获取看看赚请求，请先获取");
-} else if (!$.isNode() && !startbodys) {
-    $.msg($.name, "您未获取浏览赚请求，请先获取");
 }
-if (!$.isNode() && !startbodys.indexOf("&") == -1) {
-    startArr.push(startbodys)
-} else if (!$.isNode() && !lookbodys.indexOf("&") == -1) {
+if (!$.isNode() && !lookbodys.indexOf("&") == -1) {
     lookArr.push(lookbodys)
 } else {
-    if (!$.isNode() && !startbodys.indexOf("&") > -1) {
-        StartBody = startbodys.split('&');
-    }
     if (!$.isNode() && !lookbodys.indexOf("&") > -1) {
         LookBody = lookbodys.split('&');
     }
     if ($.isNode()) {
-        if (process.env.YOUTH_START && process.env.YOUTH_START.indexOf('&') > -1) {
-            StartBody = process.env.YOUTH_START.split('&');
-        } else {
-            StartBody = [process.env.YOUTH_START]
-        };
         if (process.env.YOUTH_LOOK && process.env.YOUTH_LOOK.indexOf('&') > -1) {
             LookBody = process.env.YOUTH_LOOK.split('&');
         } else {
             LookBody = [process.env.YOUTH_LOOK]
         }
     }
-    Object.keys(StartBody).forEach((item) => {
-        if (StartBody[item]) {
-            startArr.push(StartBody[item])
-        }
-    });
     Object.keys(LookBody).forEach((item) => {
         if (LookBody[item]) {
             lookArr.push(LookBody[item])
@@ -107,47 +76,26 @@ bjTime = new Date(timestamp).toLocaleString('zh', {
 hours = new Date().getHours();
 console.log(`\n === 脚本执行 ${bjTime} ===\n`);
 !(async () => {
-    $.log(`您共提供${startArr.length}次浏览赚任务`)
-    if (startArr.length !== 0) {
+    $.log(`\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n您共提供${lookArr.length}次看看赚任务\n`)
+    if (lookArr.length !== 0) {
         $.begin = indexLast ? parseInt(indexLast) : 1;
-        if ($.begin + 1 < startArr.length) {
+        if ($.begin + 1 < lookArr.length) {
             $.log("\n上次运行到第" + $.begin + "次终止，本次从" + (parseInt($.begin) + 1) + "次开始");
         } else {
             $.log("由于上次缩减剩余请求数已小于总请求数，本次从头开始");
             indexLast = 0, $.begin = 0
         }
         $.index = 0
-        for (let i = indexLast; i < startArr.length; i++) {
-            if (startArr[i]) {
-                gainbody = startArr[i];
-                $.index = i + 1;
-                $.log(`-------------------------\n\n开始中青看点浏览赚第${$.index}次任务`)
-            }
-            await GainStart();
-        }
-        console.log(`-------------------------\n\n中青看点共完成${$.index}次任务，共计获得${gainscore}个青豆，浏览赚任务全部结束`);
-        //$.msg("中青看点浏览赚", `共完成${$.index}次任务`+`  共计获得${gainscore}个青豆`);
-    }
-    $.log(`\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n您共提供${lookArr.length}次看看赚任务\n`)
-    if (lookArr.length !== 0) {
-        $.begin1 = indexLast1 ? parseInt(indexLast1) : 1;
-        if ($.begin1 + 1 < lookArr.length) {
-            $.log("\n上次运行到第" + $.begin1 + "次终止，本次从" + (parseInt($.begin1) + 1) + "次开始");
-        } else {
-            $.log("由于上次缩减剩余请求数已小于总请求数，本次从头开始");
-            indexLast1 = 0, $.begin1 = 0
-        }
-        $.index1 = 0
-        for (let k = indexLast1; k < lookArr.length; k++) {
+        for (let k = indexLast; k < lookArr.length; k++) {
             if (lookArr[k]) {
                 lookbody = lookArr[k];
-                $.index1 = k + 1;
-                $.log(`-------------------------\n\n开始中青看点看看赚第${$.index1}次任务`)
+                $.index = k + 1;
+                $.log(`-------------------------\n\n开始中青看点看看赚第${$.index}次任务`)
             }
             await lookStart();
         }
-        console.log(`-------------------------\n\n中青看点共完成${$.index1}次任务，共计获得${lookscore}个青豆，看看赚任务全部结束`);
-        $.msg("中青看点看看赚", '共完成' + (lookArr.length + startArr.length) + '次任务，共计获得' + parseInt(lookscore + gainscore) + '个青豆');
+        console.log(`-------------------------\n\n中青看点共完成${$.index}次任务，共计获得${lookscore}个青豆，看看赚任务全部结束`);
+        $.msg("中青看点看看赚", '共完成' + (lookArr.length) + '次任务，共计获得' + parseInt(lookscore) + '个青豆');
     }
     if ($.isNode()) {
         //await notify.sendNotify($.name，`共完成${$.index}次任务，\n共计获得${gainscore}个青豆`
@@ -170,9 +118,7 @@ console.log(`\n === 脚本执行 ${bjTime} ===\n`);
                 await $.wait(30000);
 
             }
-
             console.log("\n\n")
-
         }
 
 
@@ -188,7 +134,6 @@ console.log(`\n === 脚本执行 ${bjTime} ===\n`);
                 }
                 $.get(url, async (err, resp, data) => {
                     try {
-
                         const result = JSON.parse(data)
                         if (result.status == 1) {
                             console.log(result.data)
@@ -208,40 +153,6 @@ console.log(`\n === 脚本执行 ${bjTime} ===\n`);
     .catch((e) => $.logErr(e))
     .finally(() => $.done())
 
-function GainStart() {
-    return new Promise((resolve, reject) => {
-        $.post(gainHost('task/browse_start.json', gainbody), async (error, resp, data) => {
-            if (error) {
-                reject()
-            }
-            try {
-                $.begin = $.begin + 1;
-                let res = $.begin % startArr.length;
-                $.setdata(res + "", 'youth_look_index');
-                let startres = JSON.parse(data);
-                if (startres.success == false) {
-                    smbody = $.getdata('youth_start').replace(gainbody + "&", "");
-                    $.setdata(smbody, 'youth_start');
-                    $.log(startres.message + "已自动删除")
-                } else {
-                    comstate = startres.items.comtele_state;
-                    if (comstate == 0) {
-                        $.log("任务开始，" + startres.items.banner_id + startres.message);
-                        await $.wait(10000);
-                        await GainEnd()
-                    } else if (comstate == 1) {
-                        $.log("任务:" + startres.items.banner_id + "已完成，本次跳过");
-                    }
-                }
-            } catch (e) {
-                $.log('GainStart:' + e)
-            } finally {
-                resolve()
-            }
-        })
-    })
-}
-
 function lookStart() {
     return new Promise((resolve, reject) => {
         $.post(gainHost('nameless/adlickstart.json', lookbody), async (error, resp, data) => {
@@ -249,10 +160,8 @@ function lookStart() {
                 reject()
             }
             try {
-                $.begin1 = $.begin1 + 1;
-
-                let res = $.begin1 % lookArr.length;
-
+                $.begin = $.begin + 1;
+                let res = $.begin % lookArr.length;
                 $.setdata(res + "", 'youth_start_index');
                 startlk = JSON.parse(data);
                 if (startlk.success == false) {
@@ -276,29 +185,6 @@ function lookStart() {
                 }
             } catch (e) {
                 $.log('lookStart:' + e)
-            } finally {
-                resolve()
-            }
-        })
-    })
-}
-
-function GainEnd() {
-    return new Promise((resolve, reject) => {
-        $.post(gainHost('task/browse_end.json', gainbody), (error, resp, data) => {
-            if (error) {
-                reject()
-            }
-            try {
-                let endres = JSON.parse(data);
-                if (endres.success == true) {
-                    $.log("任务" + endres.items.banner_id + endres.message + "，恭喜获得" + endres.items.score + "个青豆");
-                    gainscore += parseInt(endres.items.score)
-                } else {
-                    $.log(endres.message)
-                }
-            } catch (e) {
-                $.log('GainEnd:' + e)
             } finally {
                 resolve()
             }
