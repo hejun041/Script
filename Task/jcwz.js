@@ -36,6 +36,7 @@ let wzbodys = ""
 let jc_timebody = $.isNode() ? (process.env.jc_timebody ? process.env.jc_timebody : "") : ($.getdata('jc_timebody') ? $.getdata('jc_timebody') : "")
 let jc_timebodyArr = []
 let jc_timebodys = ""
+let indexLast = $.getdata('jcbody_index') || 0;
 const jc_timeheader = {
     'device-platform': 'android',
     'Content-Type': 'application/x-www-form-urlencoded',
@@ -72,8 +73,16 @@ if (isGetCookie = typeof $request !== 'undefined') {
         }
 
         console.log(`共${wzbodyArr.length}个阅读body`)
+        $.begin = indexLast ? parseInt(indexLast) : 1;
+        if ($.begin + 1 < wzbodyArr.length) {
+            $.log("\n上次运行到第" + $.begin + "次终止，本次从" + (parseInt($.begin) + 1) + "次开始");
+        } else {
+            $.log("由于上次缩减剩余请求数已小于总请求数，本次从头开始");
+            indexLast = 0,
+                $.begin = 0
+        }
         $.index = 0, readtimes = "";
-        for (let k = 0; k < wzbodyArr.length; k++) {
+        for (let k = indexLast ? indexLast : 0; k < wzbodyArr.length; k++) {
             if (wzbodyArr[k]) {
                 $.index = $.index + 1;
 
@@ -127,16 +136,19 @@ function wzjl(body, timeout = 0) {
         }
         $.post(url, async (err, resp, data) => {
             try {
-                console.log('wzjl=====>', data)
                 const result = JSON.parse(data)
+                $.begin = $.begin + 1;
+                let res = $.begin % wzbodyArr.length;
+                $.setdata(res + "", 'jcbody_index');
                 if (result.error_code == "200007" && !$.isNode()) {
-                    await removeReadBody();
+                    await removeReadBody(body);
                     $.log(result.message + "已自动删除");
                 }
-                if (result.items.read_score !== "undefined") {
+                if (result.items.read_score) {
                     console.log('\n浏览文章成功，获得：' + result.items.read_score + '金币')
                 } else {
-                    console.log('\n看太久了，换一篇试试')
+                    await removeReadBody(body);
+                    console.log('已自动删除:', data)
                 }
             } catch (e) {
             } finally {

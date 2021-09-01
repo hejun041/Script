@@ -20,6 +20,7 @@ let artArr = [], delbody = 0;
 if (isGetbody = typeof $request !== `undefined`) {
     Getbody();
     $.done()
+    return
 }
 let lastIndex = $.getdata('zqbody_index')
 if (!$.isNode() && !YouthBody == true) {
@@ -28,6 +29,7 @@ if (!$.isNode() && !YouthBody == true) {
         'open-url': "https://kandian.wkandian.com/u/UnEWm"
     })
     $.done()
+    return
 } else if (!$.isNode() && YouthBody.indexOf("&") == -1) {
     ReadArr.push(YouthBody)
 } else {

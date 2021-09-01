@@ -18,9 +18,11 @@ let lookscore = 0;
 let LookBody = [];
 let lookbodys = $.getdata('youth_look')
 let indexLast = $.getdata('youth_start_index') || 0;
+let status = $.getdata('youth_kkz_status') || `{ "isfinished": true, "day": 3 }`;
 let zq_cookie = $.isNode() ? (process.env.zq_cookie ? process.env.zq_cookie : "") : ($.getdata('zq_cookie') ? $.getdata('zq_cookie') : "")
 let zq_cookieArr = []
 let zq_cookies = ""
+let statusObj = { "isfinished": false, "day": 1 }
 
 if (!$.isNode() && !lookbodys) {
     $.msg($.name, "您未获取看看赚请求，请先获取");
@@ -74,8 +76,14 @@ bjTime = new Date(timestamp).toLocaleString('zh', {
     timeZoneName: 'long'
 });
 hours = new Date().getHours();
+days = new Date().getDay();
 console.log(`\n === 脚本执行 ${bjTime} ===\n`);
 !(async () => {
+    statusObj = JSON.parse(status)
+    if (statusObj.day == days && statusObj.isfinished) {
+        $.msg("今天已经看完啦🎇~");
+        return
+    }
     $.log(`\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n您共提供${lookArr.length}次看看赚任务\n`)
     if (lookArr.length !== 0) {
         $.begin = indexLast ? parseInt(indexLast) : 1;
@@ -96,11 +104,14 @@ console.log(`\n === 脚本执行 ${bjTime} ===\n`);
         }
         console.log(`-------------------------\n\n中青看点共完成${$.index}次任务，共计获得${lookscore}个青豆，看看赚任务全部结束`);
         $.msg("中青看点看看赚", '共完成' + (lookArr.length) + '次任务，共计获得' + parseInt(lookscore) + '个青豆');
+        statusObj.isfinished = true
+        statusObj.day = days
+        $.setdata(JSON.stringify(statusObj), 'youth_kkz_status');
     }
     if ($.isNode()) {
         //await notify.sendNotify($.name，`共完成${$.index}次任务，\n共计获得${gainscore}个青豆`
     }
-    if (hours = 16) {
+    if (hours == 16) {
         console.log(`共${zq_cookieArr.length}个cookie`)
         for (let k = 0; k < zq_cookieArr.length; k++) {
             bodyVal = zq_cookieArr[k].split('&uid=')[0];
