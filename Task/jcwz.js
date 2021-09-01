@@ -146,7 +146,7 @@ function wzjl(body, timeout = 0) {
                 }
                 if (result.items.read_score) {
                     console.log('\n浏览文章成功，获得：' + result.items.read_score + '金币')
-                } else {
+                } else if (result.items.max_notice != '看太久了，换1篇试试') {
                     await removeReadBody(body);
                     console.log('已自动删除:', data)
                 }
