@@ -84,7 +84,7 @@ if (isGetCookie = typeof $request !== 'undefined') {
         $.index = 0, readtimes = "";
         for (let k = indexLast ? indexLast : 0; k < wzbodyArr.length; k++) {
             if (wzbodyArr[k]) {
-                $.index = $.index + 1;
+                $.index = k + 1;
 
                 console.log(`--------第 ${$.index} 次阅读任务执行中--------\n`)
                 await wzjl(wzbodyArr[k])

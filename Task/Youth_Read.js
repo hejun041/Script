@@ -82,7 +82,7 @@ $.log("******** 您共获取" + ReadArr.length + "次阅读请求，任务开始
     for (var i = indexLast ? indexLast : 0; i < ReadArr.length; i++) {
         if (ReadArr[i]) {
             articlebody = ReadArr[i];
-            $.index = $.index + 1;
+            $.index = i + 1;
             $.log(`-------------------------\n开始中青看点第${$.index}次阅读\n`);
             await bodyInfo();
         }
