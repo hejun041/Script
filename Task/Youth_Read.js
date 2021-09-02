@@ -9,9 +9,9 @@
 const { checkStatus, setStatus } = require('./CheckUtils');
 const $ = new Env("中青看点阅读")
 //const notify = $.isNode() ? require('./sendNotify') : '';
-let ReadArr = [], timebodyVal = "", timebodysVal = [];
+let ReadArr = [], timebodysVal = [];
 let YouthBody = $.getdata('youth_autoread') || $.getdata("zqgetbody_body");
-let YouthTimeBody = $.getdata('autotime_zqs') || $.getdata("autotime_zqs");
+let YouthTimeBody = $.getdata('autotime_zqs');
 let smallzq = $.getdata('youth_cut') || "true";
 let indexLast = $.getdata('zqbody_index');
 let artsnum = 0, videosnum = 0;
@@ -42,9 +42,21 @@ if (isGetbody = typeof $request !== `undefined`) {
     } else if (!$.isNode() && YouthBody.indexOf("&") > -1) {
         YouthBodys = YouthBody.split("&")
     };
+    if (!$.isNode()) {
+        if (YouthTimeBody.indexOf("&") == -1) {
+            timebodysVal.push(YouthTimeBody)
+        } else {
+            YouthTimeBodys = YouthTimeBody.split("&")
+        }
+    }
     Object.keys(YouthBodys).forEach((item) => {
         if (YouthBodys[item]) {
             ReadArr.push(YouthBodys[item])
+        }
+    })
+    Object.keys(YouthTimeBodys).forEach((item) => {
+        if (YouthTimeBodys[item]) {
+            timebodysVal.push(YouthTimeBodys[item])
         }
     })
 }
@@ -163,16 +175,8 @@ function AutoRead() {
                             videoscore += parseInt(readres.items.read_score);
                         }
                     }
-                    if ($.index % 7 == 0) {
-                        if ($.isNode() && process.env.YOUTH_ATIME) {
-                            timebodyVal = process.env.YOUTH_ATIME;
-                        } else {
-                            // timebodyVal = $.getdata('autotime_zq');
-                            timebodysVal = $.getdata('autotime_zqs');
-                        }
-                        if ($.index < timebodysVal.length) {
-                            await readTime($.index)
-                        }
+                    if ($.index % 2 == 0) {
+                        await readTime(randomNumber(0, timebodysVal.length))
                     };
                     if ($.index == ReadArr.length) {
                         $.log($.index + "次任务已全部完成，即将结束")
@@ -201,6 +205,15 @@ function AutoRead() {
             }
         })
     })
+}
+
+/**
+ * 生成随机数字
+ * @param {number} min 最小值（包含）
+ * @param {number} max 最大值（不包含）
+ */
+function randomNumber(min = 0, max = 1) {
+    return Math.min(Math.floor(min + Math.random() * (max - min)), max);
 }
 
 function removebody() {

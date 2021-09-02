@@ -17,7 +17,7 @@
         {
             "name": "youth_gain_kkz",
             "type": "cron",
-            "time": "35 7,19 * * *",
+            "time": "35 7 * * *",
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/youth_gain_kkz.js"
@@ -127,7 +127,7 @@
         {
             "name": "晶彩开宝箱",
             "type": "cron",
-            "time": "20 22 * * *",
+            "time": "20 18 * * *",
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/jcbox.js"
@@ -157,7 +157,7 @@
         {
             "name": "晶彩看点福利视频",
             "type": "cron",
-            "time": "25 17 * * *",
+            "time": "25 14 * * *",
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/jc_Adv_video.js"
