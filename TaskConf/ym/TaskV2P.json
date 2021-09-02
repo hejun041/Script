@@ -1,0 +1,186 @@
+{
+    "name": "TaskV2P",
+    "author": "hejun041",
+    "desc": "V2P专用",
+    "date": "2021-09-02 11:11:16",
+    "list": [
+        {
+            "name": "中青看点",
+            "type": "cron",
+            "time": "1 */5 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/Sunert/Script/master/Task/youth.js"
+            },
+            "running": true
+        },
+        {
+            "name": "youth_gain_kkz",
+            "type": "cron",
+            "time": "35 7,19 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/youth_gain_kkz.js"
+            },
+            "running": true
+        },
+        {
+            "name": "Youth_Read",
+            "type": "cron",
+            "time": "40 6-19/4 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/Youth_Read.js"
+            },
+            "running": true
+        },
+        {
+            "name": "中青搜索赚",
+            "type": "cron",
+            "time": "15 17 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/zq/zqssz.js"
+            },
+            "running": true
+        },
+        {
+            "name": "中青🧧",
+            "type": "cron",
+            "time": "37 18 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/youth_gift.js"
+            },
+            "running": true
+        },
+        {
+            "name": "中青宝箱",
+            "type": "cron",
+            "time": "30 20 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/zq/zqbox.js"
+            },
+            "running": true
+        },
+        {
+            "name": "永晨宝",
+            "type": "cron",
+            "time": "30 */3 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/ycb.js"
+            },
+            "running": true
+        },
+        {
+            "name": "红包",
+            "type": "cron",
+            "time": "*/30 * * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/xl2101200/-/main/hbsp.js"
+            },
+            "running": true
+        },
+        {
+            "name": "中青浏览赚",
+            "type": "cron",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/youth_gain_llz.js"
+            },
+            "time": "59 9 * * *",
+            "running": true
+        },
+        {
+            "name": "晶彩签到",
+            "type": "cron",
+            "time": "8 7 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/jcqd.js"
+            },
+            "running": true
+        },
+        {
+            "name": "晶彩文章阅读",
+            "type": "cron",
+            "time": "5 8-17/3 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/jcwz.js"
+            },
+            "running": true
+        },
+        {
+            "name": "晶彩看看赚",
+            "type": "cron",
+            "time": "5 7 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/jckkz.js"
+            },
+            "running": true
+        },
+        {
+            "name": "晶彩开宝箱",
+            "type": "cron",
+            "time": "20 22 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/jcbox.js"
+            },
+            "running": true
+        },
+        {
+            "name": "晶彩火爆转发",
+            "type": "cron",
+            "time": "30 6,12,17 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/jc_share.js"
+            },
+            "running": false
+        },
+        {
+            "name": "晶彩看点",
+            "type": "sub",
+            "job": {
+                "type": "skip",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/jc_cron.json"
+            }
+        },
+        {
+            "name": "晶彩转盘",
+            "type": "cron",
+            "time": "20 12 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/jc_Rotary.js"
+            },
+            "running": true
+        },
+        {
+            "name": "晶彩看点福利视频",
+            "type": "cron",
+            "time": "25 17 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/jc_Adv_video.js"
+            },
+            "running": true
+        },
+        {
+            "name": "九章头条",
+            "type": "cron",
+            "time": "21 6-23/2 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/xl2101200/-/main/jztt.js"
+            },
+            "running": true
+        }
+    ]
+}
