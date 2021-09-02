@@ -22,8 +22,9 @@ https://ant.xunsl.com/v5/user/stay.json 重写目标 https://raw.githubuserconte
 hostname = ant.xunsl.com
 */
 
+const { checkStatus, setStatus } = require('./CheckUtils');
+
 const $ = new Env("晶彩看点阅读文章");
-const notify = $.isNode() ? require('./sendNotify') : '';
 message = ""
 
 
@@ -72,6 +73,9 @@ if (isGetCookie = typeof $request !== 'undefined') {
             console.log(`您选择的是用"&"隔开\n`)
         }
 
+        if (!checkStatus($, 'jc_read')) {
+            return
+        }
         console.log(`共${wzbodyArr.length}个阅读body`)
         $.begin = indexLast ? parseInt(indexLast) : 1;
         if ($.begin + 1 < wzbodyArr.length) {
@@ -97,6 +101,7 @@ if (isGetCookie = typeof $request !== 'undefined') {
                 }
             }
         }
+        setStatus($, 'jc_read')
     })()
         .catch((e) => $.logErr(e))
         .finally(() => $.done())

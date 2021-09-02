@@ -6,7 +6,7 @@
 多个请求体时用'&'号或者换行隔开" ‼️
 
 */
-
+const { checkStatus, setStatus } = require('./CheckUtils');
 const $ = new Env("中青看点阅读")
 //const notify = $.isNode() ? require('./sendNotify') : '';
 let ReadArr = [], timebodyVal = "", timebodysVal = [];
@@ -62,6 +62,9 @@ $.log("******** 您共获取" + ReadArr.length + "次阅读请求，任务开始
         console.log($.name, '【提示】请把抓包的请求体填入Github 的 Secrets 中，请以&隔开')
         return;
     }
+    if (!checkStatus($, 'youth_read')) {
+        return
+    }
     if (!$.isNode()) {
         $.begin = indexLast ? parseInt(indexLast) : 1;
         if ($.begin + 1 < ReadArr.length) {
@@ -87,6 +90,7 @@ $.log("******** 您共获取" + ReadArr.length + "次阅读请求，任务开始
             await bodyInfo();
         }
     };
+    setStatus($, 'youth_read')
     $.log("\n……………………………………………………………………\n\n本次共删除" + delbody + "个请求，剩余" + (ReadArr.length - delbody) + "个请求");
     $.log("本次共阅读" + artsnum + "次资讯，共获得" + readscore + "青豆\n观看" + videosnum + "次视频，获得" + videoscore + "青豆(不含0青豆次数)\n");
     console.log(`-------------------------\n\n中青看点共完成${$.index}次阅读，共计获得${readscore + videoscore}个青豆，阅读请求全部结束`);

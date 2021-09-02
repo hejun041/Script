@@ -11,6 +11,7 @@ https:\/\/kandian\.wkandian\.com\/v5\/nameless\/adlickstart\.json url script-req
 
 */
 
+const { checkStatus, setStatus } = require('./CheckUtils');
 const $ = new Env("中青看点看看赚")
 //const notify = $.isNode() ? require('./sendNotify') : '';
 let lookArr = [];
@@ -18,11 +19,9 @@ let lookscore = 0;
 let LookBody = [];
 let lookbodys = $.getdata('youth_look')
 let indexLast = $.getdata('youth_start_index') || 0;
-let status = $.getdata('youth_kkz_status') || `{ "isfinished": false, "day": 3 }`;
 let zq_cookie = $.isNode() ? (process.env.zq_cookie ? process.env.zq_cookie : "") : ($.getdata('zq_cookie') ? $.getdata('zq_cookie') : "")
 let zq_cookieArr = []
 let zq_cookies = ""
-let statusObj = { "isfinished": false, "day": 1 }
 
 if (!$.isNode() && !lookbodys) {
     $.msg($.name, "您未获取看看赚请求，请先获取");
@@ -48,7 +47,7 @@ if (!$.isNode() && !lookbodys.indexOf("&") == -1) {
 }
 
 if (!zq_cookie) {
-    $.done()
+    $.msg($.name, "您未配置看看赚宝箱，请先配置");
 }
 else if (zq_cookie.indexOf("@") == -1 && zq_cookie.indexOf("@") == -1) {
     zq_cookieArr.push(zq_cookie)
@@ -79,9 +78,7 @@ hours = new Date().getHours();
 days = new Date().getDay();
 console.log(`\n === 脚本执行 ${bjTime} ===\n`);
 !(async () => {
-    statusObj = JSON.parse(status)
-    if (statusObj.day == days && statusObj.isfinished) {
-        $.msg("今天已经看完啦🎇~");
+    if (!checkStatus($, 'youth_kkz')) {
         return
     }
     $.log(`\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n您共提供${lookArr.length}次看看赚任务\n`)
@@ -104,10 +101,8 @@ console.log(`\n === 脚本执行 ${bjTime} ===\n`);
         }
         console.log(`-------------------------\n\n中青看点共完成${$.index}次任务，共计获得${lookscore}个青豆，看看赚任务全部结束`);
         $.msg("中青看点看看赚", '共完成' + (lookArr.length) + '次任务，共计获得' + parseInt(lookscore) + '个青豆');
-        statusObj.isfinished = true
-        statusObj.day = days
-        $.setdata(JSON.stringify(statusObj), 'youth_kkz_status');
     }
+    setStatus($, 'youth_kkz')
     if ($.isNode()) {
         //await notify.sendNotify($.name，`共完成${$.index}次任务，\n共计获得${gainscore}个青豆`
     }

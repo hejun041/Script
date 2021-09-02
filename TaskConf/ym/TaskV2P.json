@@ -145,14 +145,6 @@
             "running": false
         },
         {
-            "name": "晶彩看点",
-            "type": "sub",
-            "job": {
-                "type": "skip",
-                "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/jc_cron.json"
-            }
-        },
-        {
             "name": "晶彩转盘",
             "type": "cron",
             "time": "20 12 * * *",

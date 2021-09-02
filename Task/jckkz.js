@@ -13,6 +13,7 @@ https://ant.xunsl.com/v5/nameless/adlickstart.json 重写目标 https://raw.gith
 [MITM]
 hostname = ant.xunsl.com
 */
+const { checkStatus, setStatus } = require('./CheckUtils') || "";
 const $ = new Env("晶彩看点看看赚");
 const notify = $.isNode() ? require('./sendNotify') : '';
 message = ""
@@ -25,8 +26,6 @@ let jc_cookie = $.isNode() ? (process.env.jc_cookie ? process.env.jc_cookie : ""
 let jc_cookieArr = []
 let jc_cookies = ""
 let indexLast = $.getdata('jckkz_index') || 0;
-let status = $.getdata('jc_kkz_status') || `{ "isfinished": false, "day": 3 }`;
-let statusObj = { "isfinished": false, "day": 1 }
 
 const lookheader = {
     'device-platform': 'android',
@@ -105,9 +104,7 @@ days = new Date().getDay();
         await getlookStartbody()
         $.done()
     } else {
-        statusObj = JSON.parse(status)
-        if (statusObj.day == days && statusObj.isfinished) {
-            $.msg("今天已经看完啦🎇~");
+        if (!checkStatus($, 'jc_kkz')) {
             return
         }
         console.log(`共${lookStartbodyArr.length}个看看赚body`)
@@ -152,39 +149,39 @@ days = new Date().getDay();
             console.log("\n\n")
 
         }
-
-
-        function openbox(id, jc_cookie1, timeout = 0) {
-            return new Promise((resolve) => {
-                let url = {
-                    url: 'https://ant.xunsl.com/WebApi/Nameless/getBoxReward?id=' + id + '&' + jc_cookie1,
-                    headers: {
-                        'Host': 'ant.xunsl.com',
-                        //'Referer': 'https://ant.xunsl.com/h5/20190527watchMoney/?' +jc_cookie1
-                        'Referer': 'https://ant.xunsl.com/h5/20190527watchMoney/?keyword_wyq=woyaoq.com&access=WIFI&app-version=8.1.2&app_version=8.1.2&carrier=%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8&channel=c1005&' + jc_cookie1
-                    },
-                }
-                $.get(url, async (err, resp, data) => {
-                    try {
-
-                        const result = JSON.parse(data)
-                        if (result.status == 1) {
-                            console.log(result.data)
-                        } else {
-                            console.log(result)
-                        }
-                    } catch (e) {
-                    } finally {
-                        resolve()
-                    }
-                }, timeout)
-            })
-        }
+        setStatus($, 'jc_kkz')
     }
 })()
     .catch((e) => $.logErr(e))
     .finally(() => $.done())
 
+
+function openbox(id, jc_cookie1, timeout = 0) {
+    return new Promise((resolve) => {
+        let url = {
+            url: 'https://ant.xunsl.com/WebApi/Nameless/getBoxReward?id=' + id + '&' + jc_cookie1,
+            headers: {
+                'Host': 'ant.xunsl.com',
+                //'Referer': 'https://ant.xunsl.com/h5/20190527watchMoney/?' +jc_cookie1
+                'Referer': 'https://ant.xunsl.com/h5/20190527watchMoney/?keyword_wyq=woyaoq.com&access=WIFI&app-version=8.1.2&app_version=8.1.2&carrier=%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8&channel=c1005&' + jc_cookie1
+            },
+        }
+        $.get(url, async (err, resp, data) => {
+            try {
+
+                const result = JSON.parse(data)
+                if (result.status == 1) {
+                    console.log(result.data)
+                } else {
+                    console.log(result)
+                }
+            } catch (e) {
+            } finally {
+                resolve()
+            }
+        }, timeout)
+    })
+}
 
 //获取看看赚激活body
 async function getlookStartbody() {
