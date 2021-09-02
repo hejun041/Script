@@ -174,10 +174,10 @@ function getjc_timebody() {
                 $.log("此阅读时长请求已存在，本次跳过")
             } else if (jc_timebody.indexOf(bodyVal) == -1) {
                 jc_timebodys = jc_timebody + "&" + bodyVal;
-                $.setdata(bodyVal, 'jc_timebody');
+                $.setdata(jc_timebodys, 'jc_timebody');
                 $.log(`${$.name}获取阅读时长: 成功, jc_timebodys: ${bodyVal}`);
                 bodys = jc_timebodys.split("&")
-                $.msg($.name, "获取第" + bodys.length + "个阅读请求: 成功🎉", ``)
+                $.msg($.name, "获取第" + bodys.length + "个阅读时长: 成功🎉", ``)
             }
         } else {
             $.setdata(bodyVal, 'jc_timebody');
