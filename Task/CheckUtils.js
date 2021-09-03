@@ -3,13 +3,13 @@ function checkStatus(context, name) {
   try {
     var $ = context, days = new Date().getDay();
     var readStatus = $.getdata('ReadStatus') || '{}';
-    var CYCLE = $.getdata('CYCLE') || `{ 'youth_kkz': false, 'youth_read': true, 'jc_kkz': false, 'jc_read': true, }`;
+    var CYCLE = $.getdata('CYCLE') || `{"youth_kkz":false,"youth_read":true,"jc_kkz":false,"jc_read":true}`;
     var statusObj = { "isfinished": false, "day": 0, "running": false, "index": 0 };
     const INDEX = {
-      'youth_kkz': $.getdata('youth_start_index'),
-      'youth_read': $.getdata('zqbody_index'),
-      'jc_kkz': $.getdata('jckkz_index'),
-      'jc_read': $.getdata('jcbody_index')
+      "youth_kkz": $.getdata('youth_start_index'),
+      "youth_read": $.getdata('zqbody_index'),
+      "jc_kkz": $.getdata('jckkz_index'),
+      "jc_read": $.getdata('jcbody_index')
     };
     var currentIndex = INDEX[name];//实时index
     readStatus = JSON.parse(readStatus);
