@@ -90,7 +90,7 @@ console.log(`\n === 脚本执行 ${bjTime} ===\n`);
             indexLast = 0, $.begin = 0
         }
         $.index = 0
-        for (let k = indexLast; k < lookArr.length; k++) {
+        for (let k = indexLast ? parseInt(indexLast) : 1; k < lookArr.length; k++) {
             if (lookArr[k]) {
                 lookbody = lookArr[k];
                 $.index = k + 1;

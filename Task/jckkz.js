@@ -125,9 +125,6 @@ days = new Date().getDay();
             setRunTime($, 'jc_kkz')
         }
         $.msg("晶彩看点看看赚", '共完成' + (lookStartbodyArr.length) + '次任务');
-        statusObj.isfinished = true
-        statusObj.day = days
-        $.setdata(JSON.stringify(statusObj), 'jc_kkz_status');
         console.log(`共${jc_cookieArr.length}个cookie`)
         for (let k = 0; k < jc_cookieArr.length; k++) {
             bodyVal = jc_cookieArr[k].split('&uid=')[0];

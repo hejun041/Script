@@ -103,5 +103,6 @@ function isNull(obj) {
 
 module.exports = {
   checkStatus,
-  setStatus
+  setStatus,
+  setRunTime
 }
