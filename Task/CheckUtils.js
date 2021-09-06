@@ -80,7 +80,7 @@ function setRunTime(context, name) {
   readStatus = JSON.parse(obj);
   var preStatus = readStatus[name];
   preStatus.timeStamp = timeStamp;
-  readStatus[name] = statusObj;
+  readStatus[name] = preStatus;
   $.setdata(JSON.stringify(readStatus), 'ReadStatus');
 }
 
