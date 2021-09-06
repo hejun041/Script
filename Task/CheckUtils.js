@@ -4,7 +4,7 @@ function checkStatus(context, name) {
     var $ = context, days = new Date().getDay();
     var readStatus = $.getdata('ReadStatus') || '{}';
     var CYCLE = $.getdata('CYCLE') || `{"youth_kkz":false,"youth_read":true,"jc_kkz":false,"jc_read":true}`;
-    var statusObj = { "isfinished": false, "day": 0, "running": false, "index": 0 };
+    var statusObj = { "isfinished": false, "day": 0, "running": false, "index": 0, "timeStamp": 0 };
     const INDEX = {
       "youth_kkz": $.getdata('youth_start_index'),
       "youth_read": $.getdata('zqbody_index'),
@@ -23,8 +23,12 @@ function checkStatus(context, name) {
         return false;
       }
       var preIndex = statusObj.index;//脚本执行时的index
+      var preTimeStamp = statusObj.timeStamp;//最后执行的时间戳
+      var timeStamp = new Date().getTime();//时间戳
       //当前脚本运行 并且 当前index大于脚本执行时的index
-      if (statusObj.running && parseInt(currentIndex) > parseInt(preIndex)) {
+      if (statusObj.running && parseInt(currentIndex) > parseInt(preIndex) &&
+        parseInt(timeStamp) - parseInt(preTimeStamp) < 2 * 60 * 1000
+      ) {
         $.msg("脚本正在运行中，本次退出🎇~");
         statusObj.running = true;
         statusObj.isfinished = false;
@@ -49,14 +53,33 @@ function checkStatus(context, name) {
 }
 
 function setStatus(context, name) {
-  var $ = context, days = new Date().getDay();
-  var statusObj = {}, readStatus = {};
-  statusObj.running = false;
-  statusObj.day = days;
-  statusObj.isfinished = true;
-  statusObj.index = 0;
+  var $ = context;
+  var days = new Date().getDay();
+  var readStatus = {};
+  var statusObj = {
+    "running": false,
+    "day": days,
+    "isfinished": true,
+    "index": 0,
+    "times": 0
+  };
   var obj = $.getdata('ReadStatus');
   readStatus = JSON.parse(obj);
+  var preStatus = readStatus[name];
+  var times = preStatus.times || 0;
+  statusObj.times = parseInt(times) + 1;
+  readStatus[name] = statusObj;
+  $.setdata(JSON.stringify(readStatus), 'ReadStatus');
+}
+
+function setRunTime(context, name) {
+  var $ = context;
+  var timeStamp = new Date().getTime();
+  var readStatus = {};
+  var obj = $.getdata('ReadStatus');
+  readStatus = JSON.parse(obj);
+  var preStatus = readStatus[name];
+  preStatus.timeStamp = timeStamp;
   readStatus[name] = statusObj;
   $.setdata(JSON.stringify(readStatus), 'ReadStatus');
 }
