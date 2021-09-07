@@ -4,7 +4,7 @@ function checkStatus(context, name) {
     var $ = context, days = new Date().getDay();
     var readStatus = $.getdata('ReadStatus') || '{}';
     var CYCLE = $.getdata('CYCLE') || `{"youth_kkz":false,"youth_read":true,"jc_kkz":false,"jc_read":true}`;
-    var statusObj = { "isfinished": false, "day": 0, "running": false, "index": 0, "timeStamp": 0 };
+    var statusObj = { "isfinished": false, "day": 0, "running": false, "index": 0, "timeStamp": 0, "times": 0 };
     const INDEX = {
       "youth_kkz": $.getdata('youth_start_index'),
       "youth_read": $.getdata('zqbody_index'),
@@ -34,6 +34,7 @@ function checkStatus(context, name) {
         statusObj.isfinished = false;
         statusObj.day = days;
         statusObj.index = currentIndex;//更新index
+        statusObj.timeStamp = timeStamp;//更新时间戳
         readStatus[name] = statusObj;
         $.setdata(JSON.stringify(readStatus), 'ReadStatus');
         return false;
@@ -43,6 +44,9 @@ function checkStatus(context, name) {
     statusObj.isfinished = false;
     statusObj.day = days;
     statusObj.index = currentIndex;
+    if (statusObj.day != days) {
+      statusObj.times = 0;
+    }
     readStatus[name] = statusObj;
     $.setdata(JSON.stringify(readStatus), 'ReadStatus');
     return true;
