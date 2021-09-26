@@ -1,38 +1,35 @@
 {
-    "name": "TaskV2P",
+    "name": "elecV2P 定时任务订阅",
     "author": "hejun041",
-    "desc": "V2P专用",
-    "date": "2021-09-02 11:11:16",
+    "desc": "导出的任务订阅。该订阅适用于 elecV2P，与其他软件并不兼容。相关说明参考：https://github.com/elecV2/elecV2P-dei/tree/master/docs/06-task.md",
+    "date": "2021-09-14 11:20:41",
     "list": [
         {
             "name": "中青看点",
             "type": "cron",
-            "time": "1 */5 * * *",
+            "time": "1 7-23/2 * * *",
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/Sunert/Script/master/Task/youth.js"
-            },
-            "running": true
+            }
         },
         {
             "name": "youth_gain_kkz",
             "type": "cron",
-            "time": "35 6-18/3 * * *",
+            "time": "35 6-23/2 * * *",
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/youth_gain_kkz.js"
-            },
-            "running": true
+            }
         },
         {
             "name": "Youth_Read",
             "type": "cron",
-            "time": "40 6-19/4 * * *",
+            "time": "40 6-22/3 * * *",
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/Youth_Read.js"
-            },
-            "running": true
+            }
         },
         {
             "name": "中青搜索赚",
@@ -41,8 +38,7 @@
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/zq/zqssz.js"
-            },
-            "running": true
+            }
         },
         {
             "name": "中青🧧",
@@ -52,7 +48,7 @@
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/youth_gift.js"
             },
-            "running": true
+            "running": false
         },
         {
             "name": "中青宝箱",
@@ -61,38 +57,16 @@
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/zq/zqbox.js"
-            },
-            "running": true
-        },
-        {
-            "name": "永晨宝",
-            "type": "cron",
-            "time": "30 */3 * * *",
-            "job": {
-                "type": "runjs",
-                "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/ycb.js"
-            },
-            "running": false
-        },
-        {
-            "name": "红包",
-            "type": "cron",
-            "time": "*/30 * * * *",
-            "job": {
-                "type": "runjs",
-                "target": "https://ghproxy.com/https://raw.githubusercontent.com/xl2101200/-/main/hbsp.js"
-            },
-            "running": true
+            }
         },
         {
             "name": "中青浏览赚",
             "type": "cron",
+            "time": "59 9 * * *",
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/youth_gain_llz.js"
-            },
-            "time": "59 9 * * *",
-            "running": true
+            }
         },
         {
             "name": "晶彩签到",
@@ -101,8 +75,7 @@
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/jcqd.js"
-            },
-            "running": true
+            }
         },
         {
             "name": "晶彩文章阅读",
@@ -111,8 +84,7 @@
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/jcwz.js"
-            },
-            "running": true
+            }
         },
         {
             "name": "晶彩看看赚",
@@ -121,8 +93,7 @@
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/jckkz.js"
-            },
-            "running": true
+            }
         },
         {
             "name": "晶彩开宝箱",
@@ -131,8 +102,7 @@
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/jcbox.js"
-            },
-            "running": true
+            }
         },
         {
             "name": "晶彩火爆转发",
@@ -151,8 +121,7 @@
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/jc_Rotary.js"
-            },
-            "running": true
+            }
         },
         {
             "name": "晶彩看点福利视频",
@@ -161,18 +130,16 @@
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/jc_Adv_video.js"
-            },
-            "running": true
+            }
         },
         {
             "name": "九章头条",
             "type": "cron",
-            "time": "21 6-23/2 * * *",
+            "time": "25 */4 * * *",
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/xl2101200/-/main/jztt.js"
-            },
-            "running": true
+            }
         },
         {
             "name": "OK语音",
@@ -180,9 +147,9 @@
             "time": "0-59/6 8-14 * * *",
             "job": {
                 "type": "runjs",
-                "target": "https://ghproxy.com/https://raw.githubusercontent.com/xl2101200/-/main/jztt.js"
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/Wenmoux/monster/main/okyuyin/okyuyin.js"
             },
-            "running": true
+            "running": false
         },
         {
             "name": "OK语音获取token",
@@ -190,9 +157,27 @@
             "time": "0",
             "job": {
                 "type": "runjs",
-                "target": "https://ghproxy.com/https://raw.githubusercontent.com/xl2101200/-/main/jztt.js"
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/Wenmoux/monster/main/okyuyin/okGetauth.js"
             },
             "running": false
+        },
+        {
+            "name": "删除日志",
+            "type": "cron",
+            "time": "40 0 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "deletelog.js"
+            }
+        },
+        {
+            "name": "广汽三菱",
+            "type": "cron",
+            "time": "22 9 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/xl2101200/-/main/gqsl.js"
+            }
         }
     ]
 }

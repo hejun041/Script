@@ -1,7 +1,16 @@
 
 function checkStatus(context, name) {
   try {
-    var $ = context, days = new Date().getDay();
+    var $ = context, days = new Date().getDay(), hours = new Date().getHours();
+    //v2p重启执行可能会不按照cron操作
+    if (hours < 6) {
+      $.msg($.name, "太早啦~");
+      return false;
+    }
+    if (hours > 22) {
+      $.msg($.name, "太晚啦~");
+      return false;
+    }
     var readStatus = $.getdata('ReadStatus') || '{}';
     var CYCLE = $.getdata('CYCLE') || `{"youth_kkz":false,"youth_read":true,"jc_kkz":false,"jc_read":true}`;
     var statusObj = { "isfinished": false, "day": 0, "running": false, "index": 0, "timeStamp": 0, "times": 0 };
@@ -19,7 +28,7 @@ function checkStatus(context, name) {
       statusObj = obj;
       //当前日期当前脚本执行完，并且不需要循环执行
       if (statusObj.day == days && statusObj.isfinished && !CYCLE[name]) {
-        $.msg("今天已经看完啦🎇~");
+        $.msg($.name, "今天已经看完啦🎇~");
         return false;
       }
       var preIndex = statusObj.index;//脚本执行时的index
@@ -29,7 +38,7 @@ function checkStatus(context, name) {
       if (statusObj.running && parseInt(currentIndex) > parseInt(preIndex) &&
         parseInt(timeStamp) - parseInt(preTimeStamp) < 2 * 60 * 1000
       ) {
-        $.msg("脚本正在运行中，本次退出🎇~");
+        $.msg($.name, "脚本正在运行中，本次退出🎇~");
         statusObj.running = true;
         statusObj.isfinished = false;
         statusObj.day = days;
