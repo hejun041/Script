@@ -1,8 +1,8 @@
 {
     "name": "elecV2P 定时任务订阅",
     "author": "hejun041",
-    "desc": "导出的任务订阅。该订阅适用于 elecV2P，与其他软件并不兼容。相关说明参考：https://github.com/elecV2/elecV2P-dei/tree/master/docs/06-task.md",
-    "date": "2021-09-14 11:20:41",
+    "note": "hejun041 导出的任务订阅。该订阅适用于 elecV2P，与其他软件并不兼容。相关说明参考：https://github.com/elecV2/elecV2P-dei/tree/master/docs/06-task.md",
+    "date": "2021-09-26 09:32:31",
     "list": [
         {
             "name": "中青看点",
@@ -25,10 +25,19 @@
         {
             "name": "Youth_Read",
             "type": "cron",
-            "time": "40 6-22/3 * * *",
+            "time": "40 6-22/4 * * *",
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/Youth_Read.js"
+            }
+        },
+        {
+            "name": "zq_today_score",
+            "type": "cron",
+            "time": "30 23 * * *",
+            "job": {
+                "type": "runjs",
+                "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/zq/zq_today_score.js"
             }
         },
         {
@@ -71,7 +80,7 @@
         {
             "name": "晶彩签到",
             "type": "cron",
-            "time": "8 7 * * *",
+            "time": "28 7 * * *",
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/shaolin-kongfu/js_scripts/main/jcqd.js"
@@ -80,7 +89,7 @@
         {
             "name": "晶彩文章阅读",
             "type": "cron",
-            "time": "5 8-17/3 * * *",
+            "time": "15 8-17/3 * * *",
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/jcwz.js"
@@ -89,7 +98,7 @@
         {
             "name": "晶彩看看赚",
             "type": "cron",
-            "time": "5 7 * * *",
+            "time": "35 7 * * *",
             "job": {
                 "type": "runjs",
                 "target": "https://ghproxy.com/https://raw.githubusercontent.com/hejun041/Script/master/Task/jckkz.js"
@@ -147,9 +156,8 @@
             "time": "0-59/6 8-14 * * *",
             "job": {
                 "type": "runjs",
-                "target": "https://ghproxy.com/https://raw.githubusercontent.com/Wenmoux/monster/main/okyuyin/okyuyin.js"
-            },
-            "running": false
+                "target": "okyuyin_v2p.js"
+            }
         },
         {
             "name": "OK语音获取token",
