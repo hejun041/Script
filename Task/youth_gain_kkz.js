@@ -92,7 +92,7 @@ console.log(`\n === 脚本执行 ${bjTime} ===\n`);
             indexLasts = indexLasts.slice(0, zq_threads);
         }
         promises = splitArrPromise(lookArr, zq_threads);
-        Promise.all([...promises]).then(() => {
+        Promise.all([...promises]).then(async () => {
             $.msg($.name, '执行完成');
             if (false) {
                 console.log(`共${zq_cookieArr.length}个cookie`)
