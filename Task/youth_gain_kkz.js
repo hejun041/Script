@@ -14,13 +14,13 @@ https:\/\/kandian\.wkandian\.com\/v5\/nameless\/adlickstart\.json url script-req
 const $ = new Env("中青看点看看赚")
 //const notify = $.isNode() ? require('./sendNotify') : '';
 let lookArr = [];
-let lookscore = 0;
 let LookBody = [];
 let lookbodys = $.getdata('youth_look')
-let indexLast = $.getdata('youth_start_index') || 0;
+let indexLasts = $.getdata('youth_kkz_indexs') || [];
+let zq_threads = $.getdata('zq_threads') || 2;//线程数
 let zq_cookie = $.isNode() ? (process.env.zq_cookie ? process.env.zq_cookie : "") : ($.getdata('zq_cookie') ? $.getdata('zq_cookie') : "")
 let zq_cookieArr = []
-let zq_cookies = ""
+let zq_cookies = "";
 
 if (!$.isNode() && !lookbodys) {
     $.msg($.name, "您未获取看看赚请求，请先获取");
@@ -77,108 +77,122 @@ hours = new Date().getHours();
 days = new Date().getDay();
 console.log(`\n === 脚本执行 ${bjTime} ===\n`);
 !(async () => {
-    if (!checkStatus($, 'youth_kkz')) {
+    if (!checkStatus($, 'youth_kkz', zq_threads)) {
         return
     }
     $.log(`\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n您共提供${lookArr.length}次看看赚任务\n`)
     if (lookArr.length !== 0) {
-        $.begin = indexLast ? parseInt(indexLast) : 1;
-        if ($.begin + 1 < lookArr.length) {
-            $.log("\n上次运行到第" + $.begin + "次终止，本次从" + (parseInt($.begin) + 1) + "次开始");
-        } else {
-            $.log("由于上次缩减剩余请求数已小于总请求数，本次从头开始");
-            indexLast = 0, $.begin = 0
-        }
-        $.index = 0
-        for (let k = indexLast ? parseInt(indexLast) : 1; k < lookArr.length; k++) {
-            if (lookArr[k]) {
-                lookbody = lookArr[k];
-                $.index = k + 1;
-                $.log(`-------------------------\n\n开始中青看点看看赚第${$.index}次任务`)
+        var promises = [];
+        let indexArr = indexLasts;
+        if (indexLasts.length != zq_threads) {//下标初始化
+            for (let i = 0; i < zq_threads; i++) {
+                indexArr[i] = 0;
             }
-            await lookStart();
-            setRunTime($, 'youth_kkz')
+            indexLasts = indexArr;
         }
-        console.log(`-------------------------\n\n中青看点共完成${$.index}次任务，共计获得${lookscore}个青豆，看看赚任务全部结束`);
-        $.msg("中青看点看看赚", '共完成' + (lookArr.length) + '次任务，共计获得' + parseInt(lookscore) + '个青豆');
-    }
-    setStatus($, 'youth_kkz')
-
-    console.log(`共${zq_cookieArr.length}个cookie`)
-    for (let k = 0; k < zq_cookieArr.length; k++) {
-        bodyVal = zq_cookieArr[k].split('&uid=')[0];
-        var time1 = Date.parse(new Date()).toString();
-        time1 = time1.substr(0, 10);
-
-        cookie = bodyVal.replace(/zqkey=/, "cookie=")
-        cookie_id = cookie.replace(/zqkey_id=/, "cookie_id=")
-        zq_cookie1 = cookie_id + '&device_brand=xfdg&device_id=cc7dgdsgfsz83e&device_model=1gx&device_platform=android&device_type=android&inner_version=202107261526&mi=0&openudid=cc7dgdsgfsz83e&os_api=27&os_version=bdftgsdfga&phone_network=WIFI&phone_sim=1' + '&request_time=' + time1 + '&time=' + time1 + '&' + bodyVal
-        //console.log(`${zq_cookie1}`)
-        console.log(`--------第 ${k + 1} 个账号看看赚上方宝箱奖励执行中--------\n`)
-        for (let k = 0; k < 3; k++) {
-            id = k.toString()
-            await openbox(id, zq_cookie1)
-            await $.wait(30000);
-
-        }
-        console.log("\n\n")
-    }
-
-    function openbox(id, zq_cookie1, timeout = 0) {
-        return new Promise((resolve) => {
-            let url = {
-                url: 'https://kandian.wkandian.com/WebApi/Nameless/getBoxReward?id=' + id + '&' + zq_cookie1,
-                headers: {
-                    'Host': 'kandian.wkandian.com',
-                    //'Referer': 'https://kandian.wkandian.com/h5/20190527watchMoney/?' +zq_cookie1
-                    'Referer': 'https://kandian.wkandian.com/h5/20190527watchMoney/?keyword_wyq=woyaoq.com&access=WIFI&app-version=8.1.2&app_version=8.1.2&carrier=%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8&channel=c1005&' + zq_cookie1
-                },
-            }
-            $.get(url, async (err, resp, data) => {
-                try {
-                    const result = JSON.parse(data)
-                    if (result.status == 1) {
-                        console.log(result.data)
-                    } else {
-                        console.log(result)
-                    }
-                } catch (e) {
-                } finally {
-                    resolve()
-                }
-            }, timeout)
-        })
+        promises = splitArrPromise(lookArr, zq_threads);
+        Promise.all([...promises]).then(() => {
+            $.msg($.name, '执行完成');
+            console.log(`共${zq_cookieArr.length}个cookie`)
+            // for (let k = 0; k < zq_cookieArr.length; k++) {
+            //     bodyVal = zq_cookieArr[k].split('&uid=')[0];
+            //     var time1 = Date.parse(new Date()).toString();
+            //     time1 = time1.substr(0, 10);
+            //     cookie = bodyVal.replace(/zqkey=/, "cookie=")
+            //     cookie_id = cookie.replace(/zqkey_id=/, "cookie_id=")
+            //     zq_cookie1 = cookie_id + '&device_brand=xfdg&device_id=cc7dgdsgfsz83e&device_model=1gx&device_platform=android&device_type=android&inner_version=202107261526&mi=0&openudid=cc7dgdsgfsz83e&os_api=27&os_version=bdftgsdfga&phone_network=WIFI&phone_sim=1' + '&request_time=' + time1 + '&time=' + time1 + '&' + bodyVal
+            //     //console.log(`${zq_cookie1}`)
+            //     console.log(`--------第 ${k + 1} 个账号看看赚上方宝箱奖励执行中--------\n`)
+            //     for (let k = 0; k < 3; k++) {
+            //         id = k.toString()
+            //         await openbox(id, zq_cookie1)
+            //         await $.wait(30000);
+            //     }
+            //     console.log("\n\n")
+            // }
+            // setStatus($, 'youth_kkz')
+        });
     }
 })()
     .catch((e) => $.logErr(e))
     .finally(() => $.done())
 
-function lookStart() {
+//拆分数组返回promise
+function splitArrPromise(arr, threads) {
+    var newArr = [], count = 0;
+    var num = parseInt(arr.length / threads);
+    for (var i = 0; i < arr.length; i += num) {
+        if (i > arr.length - num) {
+            break;
+        }
+        let lastIndex = i + num;
+        if (lastIndex > arr.length - num) {
+            lastIndex = arr.length;
+        }
+        let sectionData = arr.slice(i, lastIndex);
+        count++;
+        let promise = new Promise((resolve) => {
+            console.log(`线程${count}===i===${i}===lastIndex===${lastIndex}`);
+            doAction(sectionData, count, resolve);
+        })
+        newArr.push(promise);
+    }
+    return newArr;
+}
+
+//lookArr 循环数据;count 线程
+async function doAction(lookArr, count, resolve) {
+    var lookscore = 0;
+    var begin = indexLasts[count];//上次运行下标
+    if (begin + 1 < lookArr.length) {
+        $.log(`\n线程${count} 上次运行到第" + ${begin} + "次终止，本次从" + ${(parseInt(begin) + 1)}+ "次开始"`);
+    } else {
+        $.log("由于上次缩减剩余请求数已小于总请求数，本次从头开始");
+        begin = 0;
+    }
+    var index = 0
+    for (let k = begin ? parseInt(begin) : 0; k < lookArr.length; k++) {
+        if (lookArr[k]) {
+            index = k + 1;
+            $.log(`-------------------------\n\n开始中青看看赚线程${count}第${index}次任务`)
+            await lookStart(lookArr[k], lookscore);
+        }
+        let currentIndexs = $.getdata('youth_kkz_indexs');
+        if (currentIndexs && JSON.stringify(currentIndexs) != JSON.stringify(indexLasts)) {
+            indexLasts = currentIndexs;
+        }
+        indexLasts[count - 1] = begin + 1;
+        $.setdata(indexLasts + "", 'youth_kkz_indexs');
+        // setRunTime($, 'youth_kkz')
+    }
+    console.log(`-------------------------\n\n中青看看赚线程${count}共完成${index}次任务，共计获得${lookscore}个青豆，看看赚任务全部结束`);
+    $.msg("中青看点看看赚", '共完成' + (lookArr.length) + '次任务，共计获得' + parseInt(lookscore) + '个青豆');
+    resolve();
+}
+
+function lookStart(lookbody, lookscore) {
     return new Promise((resolve, reject) => {
         $.post(gainHost('nameless/adlickstart.json', lookbody), async (error, resp, data) => {
             if (error) {
                 reject()
             }
             try {
-                $.begin = $.begin + 1;
-                let res = $.begin % lookArr.length;
-                $.setdata(res + "", 'youth_start_index');
-                startlk = JSON.parse(data);
+                let startlk = JSON.parse(data);
                 if (startlk.success == false) {
-                    smbody = $.getdata('youth_look').replace(lookbody + "&", "");
+                    let smbody = $.getdata('youth_look').replace(lookbody + "&", "");
                     $.setdata(smbody, 'youth_look');
-                    $.log(startlk.message + "已自动删除")
+                    $.log(startlk.message + "-已自动删除")
                 } else {
-                    comstate = startlk.items.comtele_state;
+                    let comstate = startlk.items.comtele_state;
                     if (comstate == 0) {
                         $.log("任务开始，" + startlk.items.banner_id + startlk.message);
                         for (let j = 0; j < startlk.items.see_num - startlk.items.read_num; j++) {
                             $.log("任务执行第" + parseInt(j + 1) + "次")
                             await $.wait(8000);
-                            await lookstatus()
+                            await lookstatus(lookbody)
                         }
                         await $.wait(10000);
-                        await lookEnd()
+                        await lookEnd(lookbody, lookscore);
                     } else if (comstate == 1) {
                         $.log("任务:" + startlk.items.banner_id + "已完成，本次跳过");
                     }
@@ -192,7 +206,7 @@ function lookStart() {
     })
 }
 
-function lookstatus() {
+function lookstatus(lookbody) {
     return new Promise((resolve, reject) => {
         $.post(gainHost('nameless/bannerstatus.json', lookbody), (error, resp, data) => {
             if (error) {
@@ -214,7 +228,7 @@ function lookstatus() {
     })
 }
 
-function lookEnd() {
+function lookEnd(lookbody, lookscore) {
     return new Promise((resolve, reject) => {
         $.post(gainHost('nameless/adlickend.json', lookbody), (error, resp, data) => {
             if (error) {
@@ -257,6 +271,33 @@ function gainHost(api, body) {
     }
 }
 
+
+function openbox(id, zq_cookie1, timeout = 0) {
+    return new Promise((resolve) => {
+        let url = {
+            url: 'https://kandian.wkandian.com/WebApi/Nameless/getBoxReward?id=' + id + '&' + zq_cookie1,
+            headers: {
+                'Host': 'kandian.wkandian.com',
+                //'Referer': 'https://kandian.wkandian.com/h5/20190527watchMoney/?' +zq_cookie1
+                'Referer': 'https://kandian.wkandian.com/h5/20190527watchMoney/?keyword_wyq=woyaoq.com&access=WIFI&app-version=8.1.2&app_version=8.1.2&carrier=%E4%B8%AD%E5%9B%BD%E7%A7%BB%E5%8A%A8&channel=c1005&' + zq_cookie1
+            },
+        }
+        $.get(url, async (err, resp, data) => {
+            try {
+                const result = JSON.parse(data)
+                if (result.status == 1) {
+                    console.log(result.data)
+                } else {
+                    console.log(result)
+                }
+            } catch (e) {
+            } finally {
+                resolve()
+            }
+        }, timeout)
+    })
+}
+
 function Env(t, e) { "undefined" != typeof process && JSON.stringify(process.env).indexOf("GITHUB") > -1 && process.exit(0); class s { constructor(t) { this.env = t } send(t, e = "GET") { t = "string" == typeof t ? { url: t } : t; let s = this.get; return "POST" === e && (s = this.post), new Promise((e, i) => { s.call(this, t, (t, s, r) => { t ? i(t) : e(s) }) }) } get(t) { return this.send.call(this.env, t) } post(t) { return this.send.call(this.env, t, "POST") } } return new class { constructor(t, e) { this.name = t, this.http = new s(this), this.data = null, this.dataFile = "box.dat", this.logs = [], this.isMute = !1, this.isNeedRewrite = !1, this.logSeparator = "\n", this.startTime = (new Date).getTime(), Object.assign(this, e), this.log("", `\ud83d\udd14${this.name}, \u5f00\u59cb!`) } isNode() { return "undefined" != typeof module && !!module.exports } isQuanX() { return "undefined" != typeof $task } isSurge() { return "undefined" != typeof $httpClient && "undefined" == typeof $loon } isLoon() { return "undefined" != typeof $loon } toObj(t, e = null) { try { return JSON.parse(t) } catch { return e } } toStr(t, e = null) { try { return JSON.stringify(t) } catch { return e } } getjson(t, e) { let s = e; const i = this.getdata(t); if (i) try { s = JSON.parse(this.getdata(t)) } catch { } return s } setjson(t, e) { try { return this.setdata(JSON.stringify(t), e) } catch { return !1 } } getScript(t) { return new Promise(e => { this.get({ url: t }, (t, s, i) => e(i)) }) } runScript(t, e) { return new Promise(s => { let i = this.getdata("@chavy_boxjs_userCfgs.httpapi"); i = i ? i.replace(/\n/g, "").trim() : i; let r = this.getdata("@chavy_boxjs_userCfgs.httpapi_timeout"); r = r ? 1 * r : 20, r = e && e.timeout ? e.timeout : r; const [o, h] = i.split("@"), a = { url: `http://${h}/v1/scripting/evaluate`, body: { script_text: t, mock_type: "cron", timeout: r }, headers: { "X-Key": o, Accept: "*/*" } }; this.post(a, (t, e, i) => s(i)) }).catch(t => this.logErr(t)) } loaddata() { if (!this.isNode()) return {}; { this.fs = this.fs ? this.fs : require("fs"), this.path = this.path ? this.path : require("path"); const t = this.path.resolve(this.dataFile), e = this.path.resolve(process.cwd(), this.dataFile), s = this.fs.existsSync(t), i = !s && this.fs.existsSync(e); if (!s && !i) return {}; { const i = s ? t : e; try { return JSON.parse(this.fs.readFileSync(i)) } catch (t) { return {} } } } } writedata() { if (this.isNode()) { this.fs = this.fs ? this.fs : require("fs"), this.path = this.path ? this.path : require("path"); const t = this.path.resolve(this.dataFile), e = this.path.resolve(process.cwd(), this.dataFile), s = this.fs.existsSync(t), i = !s && this.fs.existsSync(e), r = JSON.stringify(this.data); s ? this.fs.writeFileSync(t, r) : i ? this.fs.writeFileSync(e, r) : this.fs.writeFileSync(t, r) } } lodash_get(t, e, s) { const i = e.replace(/\[(\d+)\]/g, ".$1").split("."); let r = t; for (const t of i) if (r = Object(r)[t], void 0 === r) return s; return r } lodash_set(t, e, s) { return Object(t) !== t ? t : (Array.isArray(e) || (e = e.toString().match(/[^.[\]]+/g) || []), e.slice(0, -1).reduce((t, s, i) => Object(t[s]) === t[s] ? t[s] : t[s] = Math.abs(e[i + 1]) >> 0 == +e[i + 1] ? [] : {}, t)[e[e.length - 1]] = s, t) } getdata(t) { let e = this.getval(t); if (/^@/.test(t)) { const [, s, i] = /^@(.*?)\.(.*?)$/.exec(t), r = s ? this.getval(s) : ""; if (r) try { const t = JSON.parse(r); e = t ? this.lodash_get(t, i, "") : e } catch (t) { e = "" } } return e } setdata(t, e) { let s = !1; if (/^@/.test(e)) { const [, i, r] = /^@(.*?)\.(.*?)$/.exec(e), o = this.getval(i), h = i ? "null" === o ? null : o || "{}" : "{}"; try { const e = JSON.parse(h); this.lodash_set(e, r, t), s = this.setval(JSON.stringify(e), i) } catch (e) { const o = {}; this.lodash_set(o, r, t), s = this.setval(JSON.stringify(o), i) } } else s = this.setval(t, e); return s } getval(t) { return this.isSurge() || this.isLoon() ? $persistentStore.read(t) : this.isQuanX() ? $prefs.valueForKey(t) : this.isNode() ? (this.data = this.loaddata(), this.data[t]) : this.data && this.data[t] || null } setval(t, e) { return this.isSurge() || this.isLoon() ? $persistentStore.write(t, e) : this.isQuanX() ? $prefs.setValueForKey(t, e) : this.isNode() ? (this.data = this.loaddata(), this.data[e] = t, this.writedata(), !0) : this.data && this.data[e] || null } initGotEnv(t) { this.got = this.got ? this.got : require("got"), this.cktough = this.cktough ? this.cktough : require("tough-cookie"), this.ckjar = this.ckjar ? this.ckjar : new this.cktough.CookieJar, t && (t.headers = t.headers ? t.headers : {}, void 0 === t.headers.Cookie && void 0 === t.cookieJar && (t.cookieJar = this.ckjar)) } get(t, e = (() => { })) { t.headers && (delete t.headers["Content-Type"], delete t.headers["Content-Length"]), this.isSurge() || this.isLoon() ? (this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient.get(t, (t, s, i) => { !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i) })) : this.isQuanX() ? (this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => { const { statusCode: s, statusCode: i, headers: r, body: o } = t; e(null, { status: s, statusCode: i, headers: r, body: o }, o) }, t => e(t))) : this.isNode() && (this.initGotEnv(t), this.got(t).on("redirect", (t, e) => { try { if (t.headers["set-cookie"]) { const s = t.headers["set-cookie"].map(this.cktough.Cookie.parse).toString(); this.ckjar.setCookieSync(s, null), e.cookieJar = this.ckjar } } catch (t) { this.logErr(t) } }).then(t => { const { statusCode: s, statusCode: i, headers: r, body: o } = t; e(null, { status: s, statusCode: i, headers: r, body: o }, o) }, t => { const { message: s, response: i } = t; e(s, i, i && i.body) })) } post(t, e = (() => { })) { if (t.body && t.headers && !t.headers["Content-Type"] && (t.headers["Content-Type"] = "application/x-www-form-urlencoded"), t.headers && delete t.headers["Content-Length"], this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient.post(t, (t, s, i) => { !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i) }); else if (this.isQuanX()) t.method = "POST", this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => { const { statusCode: s, statusCode: i, headers: r, body: o } = t; e(null, { status: s, statusCode: i, headers: r, body: o }, o) }, t => e(t)); else if (this.isNode()) { this.initGotEnv(t); const { url: s, ...i } = t; this.got.post(s, i).then(t => { const { statusCode: s, statusCode: i, headers: r, body: o } = t; e(null, { status: s, statusCode: i, headers: r, body: o }, o) }, t => { const { message: s, response: i } = t; e(s, i, i && i.body) }) } } time(t) { let e = { "M+": (new Date).getMonth() + 1, "d+": (new Date).getDate(), "H+": (new Date).getHours(), "m+": (new Date).getMinutes(), "s+": (new Date).getSeconds(), "q+": Math.floor(((new Date).getMonth() + 3) / 3), S: (new Date).getMilliseconds() }; /(y+)/.test(t) && (t = t.replace(RegExp.$1, ((new Date).getFullYear() + "").substr(4 - RegExp.$1.length))); for (let s in e) new RegExp("(" + s + ")").test(t) && (t = t.replace(RegExp.$1, 1 == RegExp.$1.length ? e[s] : ("00" + e[s]).substr(("" + e[s]).length))); return t } msg(e = t, s = "", i = "", r) { const o = t => { if (!t) return t; if ("string" == typeof t) return this.isLoon() ? t : this.isQuanX() ? { "open-url": t } : this.isSurge() ? { url: t } : void 0; if ("object" == typeof t) { if (this.isLoon()) { let e = t.openUrl || t.url || t["open-url"], s = t.mediaUrl || t["media-url"]; return { openUrl: e, mediaUrl: s } } if (this.isQuanX()) { let e = t["open-url"] || t.url || t.openUrl, s = t["media-url"] || t.mediaUrl; return { "open-url": e, "media-url": s } } if (this.isSurge()) { let e = t.url || t.openUrl || t["open-url"]; return { url: e } } } }; this.isMute || (this.isSurge() || this.isLoon() ? $notification.post(e, s, i, o(r)) : this.isQuanX() && $notify(e, s, i, o(r))); let h = ["", "==============\ud83d\udce3\u7cfb\u7edf\u901a\u77e5\ud83d\udce3=============="]; h.push(e), s && h.push(s), i && h.push(i), console.log(h.join("\n")), this.logs = this.logs.concat(h) } log(...t) { t.length > 0 && (this.logs = [...this.logs, ...t]), console.log(t.join(this.logSeparator)) } logErr(t, e) { const s = !this.isSurge() && !this.isQuanX() && !this.isLoon(); s ? this.log("", `\u2757\ufe0f${this.name}, \u9519\u8bef!`, t.stack) : this.log("", `\u2757\ufe0f${this.name}, \u9519\u8bef!`, t) } wait(t) { return new Promise(e => setTimeout(e, t)) } done(t = {}) { const e = (new Date).getTime(), s = (e - this.startTime) / 1e3; this.log("", `\ud83d\udd14${this.name}, \u7ed3\u675f! \ud83d\udd5b ${s} \u79d2`), this.log(), (this.isSurge() || this.isQuanX() || this.isLoon()) && $done(t) } }(t, e) }
 
-function checkStatus(c, f) { try { var a = c, g = new Date().getDay(), d = new Date().getHours(); if (d < 6) { a.msg(a.name, "太早啦~"); return false } if (d > 22) { a.msg(a.name, "太晚啦~"); return false } var e = a.getdata('ReadStatus') || '{}'; var h = a.getdata('CYCLE') || `{"youth_kkz":false,"youth_read":true,"jc_kkz":false,"jc_read":true}`; var b = { "isfinished": false, "day": 0, "running": false, "index": 0, "timeStamp": 0, "times": 0 }; const INDEX = { "youth_kkz": a.getdata('youth_start_index'), "youth_read": a.getdata('zqbody_index'), "jc_kkz": a.getdata('jckkz_index'), "jc_read": a.getdata('jcbody_index') }; var i = INDEX[f]; e = JSON.parse(e); h = JSON.parse(h); var j = e[f]; if (!isNull(j)) { b = j; if (b.day == g && b.isfinished && !h[f]) { a.msg(a.name, "今天已经看完啦🎇~"); return false } var l = b.index; var m = b.timeStamp; var k = new Date().getTime(); if (b.running && parseInt(i) > parseInt(l) && parseInt(k) - parseInt(m) < 2 * 60 * 1000) { a.msg(a.name, "脚本正在运行中，本次退出🎇~"); b.running = true; b.isfinished = false; b.day = g; b.index = i; b.timeStamp = k; e[f] = b; a.setdata(JSON.stringify(e), 'ReadStatus'); return false } } b.running = true; b.isfinished = false; b.day = g; b.index = i; if (b.day != g) { b.times = 0 } e[f] = b; a.setdata(JSON.stringify(e), 'ReadStatus'); return true } catch (error) { console.log('checkStatus===>', error); return false } } function setStatus(c, f) { var a = c; var g = new Date().getDay(); var d = {}; var e = { "running": false, "day": g, "isfinished": true, "index": 0, "times": 0 }; var h = a.getdata('ReadStatus'); d = JSON.parse(h); var b = d[f]; var i = b.times || 0; e.times = parseInt(i) + 1; d[f] = e; a.setdata(JSON.stringify(d), 'ReadStatus') } function setRunTime(c, f) { var a = c; var g = new Date().getTime(); var d = {}; var e = a.getdata('ReadStatus'); d = JSON.parse(e); var h = d[f]; h.timeStamp = g; d[f] = h; a.setdata(JSON.stringify(d), 'ReadStatus') } function isNull(c) { if (!c) { return true } if (typeof c == 'object') { if (JSON.stringify(c) == '{}' || c.length == 0) { return true } } if (typeof c == 'string') { if (c == '{}') { return true } } return false };
+function checkStatus(e, c, g) { try { var b = e, d = new Date().getDay(), i = new Date().getHours(); if (i < 6) { b.msg(b.name, "太早啦~"); return false } if (i > 22) { b.msg(b.name, "太晚啦~"); return false } var f = b.getdata('ReadStatus') || '{}'; var k = b.getdata('CYCLE') || `{"youth_kkz":false,"youth_read":true,"jc_kkz":false,"jc_read":true}`; var a = { "isfinished": false, "day": 0, "running": false, "index": 0, "timeStamp": 0, "times": 0 }; const INDEX = { "youth_kkz": b.getdata('youth_kkz_indexs'), "youth_read": b.getdata('zqbody_index'), "jc_kkz": b.getdata('jckkz_index'), "jc_read": b.getdata('jcbody_index') }; var h = INDEX[c], j; j = INDEX[c]; if (c == 'youth_kkz') { if (typeof h == 'object') { h = h[g] } } f = JSON.parse(f); k = JSON.parse(k); var m = f[c]; if (!isNull(m)) { a = m; if (a.day != d) { a.times = 0 } if (a.day == d && a.isfinished && !k[c]) { b.msg(b.name, "今天已经看完啦🎇~"); return false } var l = a.index || 0; if (c == 'youth_kkz') { if (typeof l == 'object') { l = l[g] } } var o = a.timeStamp; var n = new Date().getTime(); if (a.running && parseInt(h) > parseInt(l) && parseInt(n) - parseInt(o) < 2 * 60 * 1000) { b.msg(b.name, "脚本正在运行中，本次退出🎇~"); a.running = true; a.isfinished = false; a.day = d; if (c == 'youth_kkz') { if (typeof j == 'number') { h = j } else { if (typeof j == 'object') { j[g] = h; h = j } else { h = 0 } } } a.index = h; a.timeStamp = n; f[c] = a; b.setdata(JSON.stringify(f), 'ReadStatus'); return false } } a.running = true; a.isfinished = false; a.day = d; a.index = j; f[c] = a; b.setdata(JSON.stringify(f), 'ReadStatus'); return true } catch (error) { console.log('checkStatus===>', error); return false } } function setStatus(e, c) { var g = e; var b = new Date().getDay(); var d = {}; var i = { "running": false, "day": b, "isfinished": true, "index": 0, "times": 0 }; var f = g.getdata('ReadStatus'); d = JSON.parse(f); var k = d[c]; var a = k.times || 0; i.times = parseInt(a) + 1; d[c] = i; g.setdata(JSON.stringify(d), 'ReadStatus') } function setRunTime(e, c) { var g = e; var b = new Date().getTime(); var d = {}; var i = g.getdata('ReadStatus'); d = JSON.parse(i); var f = d[c]; f.timeStamp = b; d[c] = f; g.setdata(JSON.stringify(d), 'ReadStatus') } function isNull(e) { if (!e) { return true } if (typeof e == 'object') { if (JSON.stringify(e) == '{}' || e.length == 0) { return true } } if (typeof e == 'string') { if (e == '{}') { return true } } return false };

@@ -1,5 +1,5 @@
 
-function checkStatus(context, name) {
+function checkStatus(context, name, thread) {
   try {
     var $ = context, days = new Date().getDay(), hours = new Date().getHours();
     //v2p重启执行可能会不按照cron操作
@@ -15,23 +15,37 @@ function checkStatus(context, name) {
     var CYCLE = $.getdata('CYCLE') || `{"youth_kkz":false,"youth_read":true,"jc_kkz":false,"jc_read":true}`;
     var statusObj = { "isfinished": false, "day": 0, "running": false, "index": 0, "timeStamp": 0, "times": 0 };
     const INDEX = {
-      "youth_kkz": $.getdata('youth_start_index'),
+      "youth_kkz": $.getdata('youth_kkz_indexs'),
       "youth_read": $.getdata('zqbody_index'),
       "jc_kkz": $.getdata('jckkz_index'),
       "jc_read": $.getdata('jcbody_index')
     };
-    var currentIndex = INDEX[name];//实时index
+    var currentIndex = INDEX[name], originIndex;//实时index
+    originIndex = INDEX[name];
+    if (name == 'youth_kkz') {
+      if (typeof currentIndex == 'object') {
+        currentIndex = currentIndex[thread];
+      }
+    }
     readStatus = JSON.parse(readStatus);
     CYCLE = JSON.parse(CYCLE);
     var obj = readStatus[name];
     if (!isNull(obj)) {
       statusObj = obj;
+      if (statusObj.day != days) {
+        statusObj.times = 0;
+      }
       //当前日期当前脚本执行完，并且不需要循环执行
       if (statusObj.day == days && statusObj.isfinished && !CYCLE[name]) {
         $.msg($.name, "今天已经看完啦🎇~");
         return false;
       }
-      var preIndex = statusObj.index;//脚本执行时的index
+      var preIndex = statusObj.index || 0;//脚本执行时的index
+      if (name == 'youth_kkz') {
+        if (typeof preIndex == 'object') {
+          preIndex = preIndex[thread];
+        }
+      }
       var preTimeStamp = statusObj.timeStamp;//最后执行的时间戳
       var timeStamp = new Date().getTime();//时间戳
       //当前脚本运行 并且 当前index大于脚本执行时的index
@@ -42,6 +56,18 @@ function checkStatus(context, name) {
         statusObj.running = true;
         statusObj.isfinished = false;
         statusObj.day = days;
+        if (name == 'youth_kkz') {
+          if (typeof originIndex == 'number') {
+            currentIndex = originIndex;
+          } else {
+            if (typeof originIndex == 'object') {
+              originIndex[thread] = currentIndex;
+              currentIndex = originIndex;
+            } else {
+              currentIndex = 0;
+            }
+          }
+        }
         statusObj.index = currentIndex;//更新index
         statusObj.timeStamp = timeStamp;//更新时间戳
         readStatus[name] = statusObj;
@@ -52,10 +78,7 @@ function checkStatus(context, name) {
     statusObj.running = true;
     statusObj.isfinished = false;
     statusObj.day = days;
-    statusObj.index = currentIndex;
-    if (statusObj.day != days) {
-      statusObj.times = 0;
-    }
+    statusObj.index = originIndex;
     readStatus[name] = statusObj;
     $.setdata(JSON.stringify(readStatus), 'ReadStatus');
     return true;
@@ -112,6 +135,24 @@ function isNull(obj) {
     }
   }
   return false;
+}
+
+//拆分数组
+function splitArr(arr, threads) {
+  var newArr = [];
+  var num = parseInt(arr.length / threads);
+  for (var i = 0; i < arr.length; i += num) {
+    if (i > arr.length - num) {
+      break;
+    }
+    let lastIndex = i + num;
+    if (lastIndex > arr.length - num) {
+      lastIndex = arr.length;
+    }
+
+    newArr.push(arr.slice(i, lastIndex));
+  }
+  return newArr;
 }
 
 module.exports = {
