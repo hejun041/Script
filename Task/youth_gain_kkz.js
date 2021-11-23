@@ -95,25 +95,25 @@ console.log(`\n === 脚本执行 ${bjTime} ===\n`);
         promises = splitArrPromise(lookArr, zq_threads);
         Promise.all([...promises]).then(async () => {
             $.msg($.name, '执行完成');
-            if (false) {
-                console.log(`共${zq_cookieArr.length}个cookie`)
-                for (let k = 0; k < zq_cookieArr.length; k++) {
-                    bodyVal = zq_cookieArr[k].split('&uid=')[0];
-                    var time1 = Date.parse(new Date()).toString();
-                    time1 = time1.substr(0, 10);
-                    cookie = bodyVal.replace(/zqkey=/, "cookie=")
-                    cookie_id = cookie.replace(/zqkey_id=/, "cookie_id=")
-                    zq_cookie1 = cookie_id + '&device_brand=xfdg&device_id=cc7dgdsgfsz83e&device_model=1gx&device_platform=android&device_type=android&inner_version=202107261526&mi=0&openudid=cc7dgdsgfsz83e&os_api=27&os_version=bdftgsdfga&phone_network=WIFI&phone_sim=1' + '&request_time=' + time1 + '&time=' + time1 + '&' + bodyVal
-                    //console.log(`${zq_cookie1}`)
-                    console.log(`--------第 ${k + 1} 个账号看看赚上方宝箱奖励执行中--------\n`)
-                    for (let k = 0; k < 3; k++) {
-                        id = k.toString()
-                        await openbox(id, zq_cookie1)
-                        await $.wait(30000);
-                    }
-                    console.log("\n\n")
+            // if (false) {
+            console.log(`共${zq_cookieArr.length}个cookie`)
+            for (let k = 0; k < zq_cookieArr.length; k++) {
+                bodyVal = zq_cookieArr[k].split('&uid=')[0];
+                var time1 = Date.parse(new Date()).toString();
+                time1 = time1.substr(0, 10);
+                cookie = bodyVal.replace(/zqkey=/, "cookie=")
+                cookie_id = cookie.replace(/zqkey_id=/, "cookie_id=")
+                zq_cookie1 = cookie_id + '&device_brand=xfdg&device_id=cc7dgdsgfsz83e&device_model=1gx&device_platform=android&device_type=android&inner_version=202107261526&mi=0&openudid=cc7dgdsgfsz83e&os_api=27&os_version=bdftgsdfga&phone_network=WIFI&phone_sim=1' + '&request_time=' + time1 + '&time=' + time1 + '&' + bodyVal
+                //console.log(`${zq_cookie1}`)
+                console.log(`--------第 ${k + 1} 个账号看看赚上方宝箱奖励执行中--------\n`)
+                for (let k = 0; k < 3; k++) {
+                    id = k.toString()
+                    await openbox(id, zq_cookie1)
+                    await $.wait(30000);
                 }
+                console.log("\n\n")
             }
+            // }
             setStatus($, 'youth_kkz')
         });
     }
