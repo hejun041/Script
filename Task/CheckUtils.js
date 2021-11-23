@@ -15,7 +15,7 @@ function checkStatus(context, name, thread) {
     var CYCLE = $.getdata('CYCLE') || `{"youth_kkz":false,"youth_read":true,"jc_kkz":false,"jc_read":true}`;
     var statusObj = { "isfinished": false, "day": 0, "running": false, "index": 0, "timeStamp": 0, "times": 0 };
     const INDEX = {
-      "youth_kkz": JSON.parse($.getdata('youth_kkz_indexs')),
+      "youth_kkz": $.getdata('youth_kkz_indexs'),
       "youth_read": $.getdata('zqbody_index'),
       "jc_kkz": $.getdata('jckkz_index'),
       "jc_read": $.getdata('jcbody_index')
@@ -23,7 +23,9 @@ function checkStatus(context, name, thread) {
     var currentIndex = INDEX[name], originIndex;//实时index
     originIndex = INDEX[name];
     if (name == 'youth_kkz') {
-      currentIndex = currentIndex[thread];
+      if (typeof currentIndex == 'object') {
+        currentIndex = currentIndex[thread];
+      }
     }
     readStatus = JSON.parse(readStatus);
     CYCLE = JSON.parse(CYCLE);
@@ -40,7 +42,9 @@ function checkStatus(context, name, thread) {
       }
       var preIndex = statusObj.index || 0;//脚本执行时的index
       if (name == 'youth_kkz') {
-        preIndex = JSON.parse(preIndex)[thread];
+        if (typeof preIndex == 'object') {
+          preIndex = preIndex[thread];
+        }
       }
       var preTimeStamp = statusObj.timeStamp;//最后执行的时间戳
       var timeStamp = new Date().getTime();//时间戳
@@ -53,8 +57,16 @@ function checkStatus(context, name, thread) {
         statusObj.isfinished = false;
         statusObj.day = days;
         if (name == 'youth_kkz') {
-          originIndex[thread] = currentIndex;
-          currentIndex = originIndex;
+          if (typeof originIndex == 'number') {
+            currentIndex = originIndex;
+          } else {
+            if (typeof originIndex == 'object') {
+              originIndex[thread] = currentIndex;
+              currentIndex = originIndex;
+            } else {
+              currentIndex = 0;
+            }
+          }
         }
         statusObj.index = currentIndex;//更新index
         statusObj.timeStamp = timeStamp;//更新时间戳
